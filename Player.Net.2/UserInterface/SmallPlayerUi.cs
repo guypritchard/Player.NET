@@ -77,7 +77,17 @@
                                       new LightButton
                                       {
                                           Name = "ChangeUi",
-                                          OnDoubleClick = p => window.ChangeUi()
+                                          OnDoubleClick = (p) => {
+
+                                            // Hide the playlist if switching to another Ui.
+                                            if (this.playList.Visible)
+                                            {
+                                                this.playList.Hide();
+                                            }
+                                            
+                                            window.ChangeUi();
+                                          },
+
                                       },
                                       new ImageCachingLightControl
                                       {

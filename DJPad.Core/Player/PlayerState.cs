@@ -206,7 +206,7 @@ namespace DJPad.Player
                     if (Playlist.Repeat)
                     {
                         Playlist.Current.Source.Position = TimeSpan.Zero;
-                        // this.Play(Playlist.Current, this.KeepPlaying);
+                        this.Play(Playlist.Current, this.KeepPlaying);
                         return;
                     }
 
