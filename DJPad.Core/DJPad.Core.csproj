@@ -1,0 +1,248 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{078BA54C-6B70-448A-A539-FED0ADF7F81D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DJPad.Core</RootNamespace>
+    <AssemblyName>DJPad.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <NuGetPackageImportStamp>96c2ea8a</NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SharpDX, Version=3.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.3.0.1\lib\net45\SharpDX.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1, Version=3.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct2D1.3.0.1\lib\net45\SharpDX.Direct2D1.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.DirectSound, Version=3.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.DirectSound.3.0.1\lib\net45\SharpDX.DirectSound.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.DXGI, Version=3.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.DXGI.3.0.1\lib\net45\SharpDX.DXGI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Serialization" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Base\Clock.cs" />
+    <Compile Include="Base\SourceRegistry.cs" />
+    <Compile Include="BeatDetector\AudioProcessor.cs" />
+    <Compile Include="BeatDetector\BeatDetector.cs" />
+    <Compile Include="BeatDetector\Event.cs" />
+    <Compile Include="BeatDetector\FFT.cs" />
+    <Compile Include="Lib\CircularBuffer.cs" />
+    <Compile Include="Lib\FFT\BeatrootFFT.cs" />
+    <Compile Include="Lib\FFT\ComplexNumber.cs" />
+    <Compile Include="Lib\FFT\FFTold.cs" />
+    <Compile Include="Lib\FFT\FFT2.cs" />
+    <Compile Include="Lib\FFT\FftCalc.cs" />
+    <Compile Include="Lib\FFT\FFTTransform.cs" />
+    <Compile Include="Lib\FFT\Fourier.cs" />
+    <Compile Include="Lib\FFT\IFFT.cs" />
+    <Compile Include="Lib\Mixer.cs" />
+    <Compile Include="Output\Wave\WaveNative.cs" />
+    <Compile Include="Output\Wave\WindowsNative.cs" />
+    <Compile Include="Player\PlayerState.cs" />
+    <Compile Include="Player\Playlist\Corpus.cs" />
+    <Compile Include="Player\Playlist\IPlaylistItem.cs" />
+    <Compile Include="Player\Playlist\PlaylistGenerator.cs" />
+    <Compile Include="Player\Playlist\PlaylistItem.cs" />
+    <Compile Include="Player\Playlist\PlaylistItemState.cs" />
+    <Compile Include="Sources\NullSource.cs" />
+    <Compile Include="Sources\Track.cs" />
+    <Compile Include="Sources\Wma\MMIO.cs" />
+    <Compile Include="Sources\Wma\WmaMetadataSource.cs" />
+    <Compile Include="Sources\Wma\WmaSource.cs" />
+    <Compile Include="Sources\Wma\WMCore.cs" />
+    <Compile Include="Sources\Wma\WMDefs.cs" />
+    <Compile Include="Sources\Wma\WMUtils.cs" />
+    <Compile Include="Utils\AlternateArtSource.cs" />
+    <Compile Include="Utils\AsyncLazy.cs" />
+    <Compile Include="Utils\BpmDetector.cs" />
+    <Compile Include="Utils\CachingBitmapProducer.cs" />
+    <Compile Include="Utils\ColorExtensions.cs" />
+    <Compile Include="Utils\Filters.cs" />
+    <Compile Include="Utils\MetadataTextImageProducer.cs" />
+    <Compile Include="Output\BaseOutput.cs" />
+    <Compile Include="Output\DirectSound.cs" />
+    <Compile Include="Output\FourChannelOut.cs" />
+    <Compile Include="Output\NullOutput.cs" />
+    <Compile Include="Output\WaveOut.cs" />
+    <Compile Include="Output\Wave\WaveOutBuffer.cs" />
+    <Compile Include="Output\Wave\WaveOutHelper.cs" />
+    <Compile Include="Player\Playlist\Playlist.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sources\Cd\CdSource.cs" />
+    <Compile Include="Sources\Cd\CdReader.cs" />
+    <Compile Include="Sources\Cd\Win32Functions.cs" />
+    <Compile Include="Sources\Mp3\Id3MetadataSource.cs" />
+    <Compile Include="Sources\Mp3\Mp3Source.cs" />
+    <Compile Include="Sources\SimpleMetadataSource.cs" />
+    <Compile Include="Sources\SynthSource.cs" />
+    <Compile Include="Sources\Wave\WaveSource.cs" />
+    <Compile Include="Sources\Wave\Structs.cs" />
+    <Compile Include="Sources\Wave\WaveFileReader.cs" />
+    <Compile Include="Utils\BitmapExtensions.cs" />
+    <Compile Include="Utils\Configuration.cs" />
+    <Compile Include="Utils\IoCContainer.cs" />
+    <Compile Include="Utils\IEnumerableExtensions.cs" />
+    <Compile Include="Utils\MultimediaKeyListener.cs" />
+    <Compile Include="Utils\PaletteExtractor.cs" />
+    <Compile Include="Utils\SafeFileEnumerator.cs" />
+    <Compile Include="Utils\StaticRandom.cs" />
+    <Compile Include="Utils\TimeSpanExtensions.cs" />
+    <Compile Include="Utils\VisualisationHost.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Utils\VisualisationHost.Designer.cs">
+      <DependentUpon>VisualisationHost.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Utils\WaveformImageProducer.cs" />
+    <Compile Include="Vis\AlbumText.cs" />
+    <Compile Include="Vis\BaseVisualisation.cs" />
+    <Compile Include="Vis\BassZoom.cs" />
+    <Compile Include="Utils\Cache.cs" />
+    <Compile Include="Vis\Christmas.cs" />
+    <Compile Include="Vis\CircularOscilloscope.cs" />
+    <Compile Include="Vis\FftBasedVisualisation.cs" />
+    <Compile Include="Vis\FFTBars.cs" />
+    <Compile Include="Vis\FFTGraph.cs" />
+    <Compile Include="Vis\Oscilloscope.cs">
+    </Compile>
+    <Compile Include="Vis\Sonagram.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BeatDetector\Peaks.cs" />
+    <Content Include="Vis\Ideas.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Sources\Synth\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DJPad.Interfaces\DJPad.Interfaces.csproj">
+      <Project>{5bad4cd8-4010-4056-ab5a-956c7d296578}</Project>
+      <Name>DJPad.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\External.mp3sharp\mp3sharp\Mp3Sharp.csproj">
+      <Project>{834cab58-648d-47cc-ac6f-d01c08c809a4}</Project>
+      <Name>Mp3Sharp</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Utils\VisualisationHost.resx">
+      <DependentUpon>VisualisationHost.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

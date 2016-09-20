@@ -1,0 +1,28 @@
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mp3Sharp", "mp3sharp\Mp3Sharp.csproj", "{834CAB58-648D-47CC-AC6F-D01C08C809A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagedDirectSoundDemo", "ManagedDirectsoundDemo\ManagedDirectSoundDemo.csproj", "{8C85B99A-9915-4896-A8E8-891726C0A316}"
+	ProjectSection(ProjectDependencies) = postProject
+		{834CAB58-648D-47CC-AC6F-D01C08C809A4} = {834CAB58-648D-47CC-AC6F-D01C08C809A4}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{834CAB58-648D-47CC-AC6F-D01C08C809A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{834CAB58-648D-47CC-AC6F-D01C08C809A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{834CAB58-648D-47CC-AC6F-D01C08C809A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{834CAB58-648D-47CC-AC6F-D01C08C809A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C85B99A-9915-4896-A8E8-891726C0A316}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C85B99A-9915-4896-A8E8-891726C0A316}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C85B99A-9915-4896-A8E8-891726C0A316}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C85B99A-9915-4896-A8E8-891726C0A316}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

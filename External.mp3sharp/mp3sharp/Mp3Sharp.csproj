@@ -1,0 +1,259 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{834CAB58-648D-47CC-AC6F-D01C08C809A4}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>Mp3Sharp</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>
+    </RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>1</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>
+    </DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>1</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <BaseAddress>285212672</BaseAddress>
+    <WarningLevel>1</WarningLevel>
+    <FileAlignment>4096</FileAlignment>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <BaseAddress>285212672</BaseAddress>
+    <WarningLevel>1</WarningLevel>
+    <FileAlignment>4096</FileAlignment>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib">
+      <Name>mscorlib</Name>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Converter\RiffChunkHeader.cs" />
+    <Compile Include="Converter\RiffFile.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Converter\WaveFile.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Converter\WaveFileObuffer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Converter\WaveFileSample.cs" />
+    <Compile Include="Converter\WaveFormatChunk.cs" />
+    <Compile Include="Converter\WaveFormatChunkData.cs" />
+    <Compile Include="Decoder\BackStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\BitReserve.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\Bitstream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\BitstreamErrors.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\BitstreamException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\Crc16.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\Decoder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\DecoderErrors.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\DecoderException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\Equalizer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\IFrameDecoder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\Header.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\huffcodetab.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\GeneralErrors.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\Mp3SharpException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\LayerIDecoder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\LayerIIDecoder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\LayerIIIDecoder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\Obuffer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\OutputChannels.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\SampleBuffer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decoder\SynthesisFilter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ID3\Id3FrameTypeExtensions.cs" />
+    <Compile Include="ID3\Id3V2Frame.cs" />
+    <Compile Include="ID3\Id3V2Tag.cs" />
+    <Compile Include="ID3\ImageFrame.cs" />
+    <Compile Include="ID3\TextFrame.cs" />
+    <Compile Include="Mp3Stream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OBuffer16BitStereo.cs" />
+    <Compile Include="Sample.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Support\SupportClass.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Content Include="Decoder\readme.txt" />
+    <Content Include="readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

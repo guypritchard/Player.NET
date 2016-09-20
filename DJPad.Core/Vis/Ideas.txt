@@ -1,0 +1,4 @@
+﻿Cool visualisations:
+http://www.autoitscript.com/forum/topic/87200-some-graphical-examples-using-gdi/
+https://www.globalsign.com/en/code-signing/
+

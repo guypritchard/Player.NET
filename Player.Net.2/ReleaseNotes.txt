@@ -1,0 +1,38 @@
+﻿What's New?
+
+19/09/2016
+Publishing to github.
+Still a major work in progress - many bugs and unfinished features.  (I'm looking at you CD playback.)
+ 
+Rolling up previous updates:
+
+06/06/2016
+The sloppiest WMA playback integration you've ever seen.  Making things worse...
+Internal refactoring to enable D2D rendering.  Fixing bugs. Optimising rendering somewhat.  Player.NET.3 not ready at all.
+Shell integration seems to be working.  Some optimisation - might be a bit bad...
+
+16/12/2015
+Fiddling with playlists and visualisations.  A bit flaky - but better, I think?
+
+23/11/2015
+Yet more fiddling with playlist stuff. Home,End,Up & Down buttons working  Still probably spending too much time on this...
+
+12/11/2015
+More fiddling with playlist stuff.  We now scroll using a mouse.  Probably spending too much time on this...
+
+03/11/2015
+Implemented a pretty crappy playlist of sorts.  Missing lots of stuff.
+
+07/10/2015
+Yeah those features need some work.  Switching them off. 
+
+29/9/2015
+Fiddling with some Windows shell integration features. 
+
+12/9/2015
+Fiddling with the randomised playlist.  There were bugs.  I am sorry.
+
+9/9/2015
+Added really crappy playlist randomiser, because I got sick of the order of my playlist.  :)
+The randomiser isn't stable, I need to fix that.
+

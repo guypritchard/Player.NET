@@ -1,0 +1,127 @@
+﻿<DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/" xmlns:sec="http://www.sec.co.kr/" xmlns:dlna="urn:schemas-dlna-org:metadata-1-0/">
+  <item id="22$@31293" parentID="22$3474" restricted="1">
+    <dc:title>01 Track 1</dc:title>
+    <upnp:class>object.item.audioItem.musicTrack</upnp:class>
+    <dc:date>2002-01-01</dc:date>
+    <upnp:album>As Heard on Radio Soulwax Part 2</upnp:album>
+    <upnp:albumArtist>2 Many DJ&apos;s</upnp:albumArtist>
+    <upnp:artist>2 Many DJ&apos;s</upnp:artist>
+    <dc:creator>2 Many DJ&apos;s</dc:creator>
+    <upnp:genre>Mix</upnp:genre>
+    <upnp:author>Henry Mancini</upnp:author>
+    <upnp:originalTrackNumber>1</upnp:originalTrackNumber>
+    <res  protocolInfo="http-get:*:audio/x-ms-wma:DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000" size="2748416" bitrate="16000" duration="0:02:50.000" nrAudioChannels="2" sampleFrequency="44100">http://192.168.0.10:50002/m/NDLNA/31293.wma</res>
+  </item>
+  <item id="22$@31294" parentID="22$3474" restricted="1">
+    <dc:title>02 Track 2</dc:title>
+    <upnp:class>object.item.audioItem.musicTrack</upnp:class>
+    <dc:date>2002-01-01</dc:date>
+    <upnp:album>As Heard on Radio Soulwax Part 2</upnp:album>
+    <upnp:albumArtist>2 Many DJ&apos;s</upnp:albumArtist>
+    <upnp:artist>2 Many DJ&apos;s</upnp:artist>
+    <dc:creator>2 Many DJ&apos;s</dc:creator>
+    <upnp:genre>Mix</upnp:genre>
+    <upnp:author>Peaches</upnp:author>
+    <upnp:originalTrackNumber>2</upnp:originalTrackNumber>
+    <res  protocolInfo="http-get:*:audio/x-ms-wma:DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000" size="1601536" bitrate="16000" duration="0:01:39.000" nrAudioChannels="2" sampleFrequency="44100">http://192.168.0.10:50002/m/NDLNA/31294.wma</res>
+  </item>
+  <item id="22$@31295" parentID="22$3474" restricted="1">
+    <dc:title>03 Track 3</dc:title>
+    <upnp:class>object.item.audioItem.musicTrack</upnp:class>
+    <dc:date>2002-01-01</dc:date>
+    <upnp:album>As Heard on Radio Soulwax Part 2</upnp:album>
+    <upnp:albumArtist>2 Many DJ&apos;s</upnp:albumArtist>
+    <upnp:artist>2 Many DJ&apos;s</upnp:artist>
+    <dc:creator>2 Many DJ&apos;s</dc:creator>
+    <upnp:genre>Mix</upnp:genre>
+    <upnp:author>Lou Reed</upnp:author>
+    <upnp:originalTrackNumber>3</upnp:originalTrackNumber>
+    <res  protocolInfo="http-get:*:audio/x-ms-wma:DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000" size="942080" bitrate="16000" duration="0:00:58.000" nrAudioChannels="2" sampleFrequency="44100">http://192.168.0.10:50002/m/NDLNA/31295.wma</res>
+  </item>
+  <item id="22$@31296" parentID="22$3474" restricted="1">
+    <dc:title>04 Track 4</dc:title>
+    <upnp:class>object.item.audioItem.musicTrack</upnp:class>
+    <dc:date>2002-01-01</dc:date>
+    <upnp:album>As Heard on Radio Soulwax Part 2</upnp:album>
+    <upnp:albumArtist>2 Many DJ&apos;s</upnp:albumArtist>
+    <upnp:artist>2 Many DJ&apos;s</upnp:artist>
+    <dc:creator>2 Many DJ&apos;s</dc:creator>
+    <upnp:genre>Mix</upnp:genre>
+    <upnp:originalTrackNumber>4</upnp:originalTrackNumber>
+    <res  protocolInfo="http-get:*:audio/x-ms-wma:DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000" size="937984" bitrate="16000" duration="0:00:58.000" nrAudioChannels="2" sampleFrequency="44100">http://192.168.0.10:50002/m/NDLNA/31296.wma</res>
+  </item>
+  <item id="22$@31297" parentID="22$3474" restricted="1">
+    <dc:title>05 Track 5</dc:title>
+    <upnp:class>object.item.audioItem.musicTrack</upnp:class>
+    <dc:date>2002-01-01</dc:date>
+    <upnp:album>As Heard on Radio Soulwax Part 2</upnp:album>
+    <upnp:albumArtist>2 Many DJ&apos;s</upnp:albumArtist>
+    <upnp:artist>2 Many DJ&apos;s</upnp:artist>
+    <dc:creator>2 Many DJ&apos;s</dc:creator>
+    <upnp:genre>Mix</upnp:genre>
+    <upnp:author>Dave Alexander</upnp:author>
+    <upnp:originalTrackNumber>5</upnp:originalTrackNumber>
+    <res  protocolInfo="http-get:*:audio/x-ms-wma:DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000" size="1695744" bitrate="16000" duration="0:01:45.000" nrAudioChannels="2" sampleFrequency="44100">http://192.168.0.10:50002/m/NDLNA/31297.wma</res>
+  </item>
+  <item id="22$@31298" parentID="22$3474" restricted="1">
+    <dc:title>06 Track 6</dc:title>
+    <upnp:class>object.item.audioItem.musicTrack</upnp:class>
+    <dc:date>2002-01-01</dc:date>
+    <upnp:album>As Heard on Radio Soulwax Part 2</upnp:album>
+    <upnp:albumArtist>2 Many DJ&apos;s</upnp:albumArtist>
+    <upnp:artist>2 Many DJ&apos;s</upnp:artist>
+    <dc:creator>2 Many DJ&apos;s</dc:creator>
+    <upnp:genre>Mix</upnp:genre>
+    <upnp:originalTrackNumber>6</upnp:originalTrackNumber>
+    <res  protocolInfo="http-get:*:audio/x-ms-wma:DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000" size="1437696" bitrate="16000" duration="0:01:29.000" nrAudioChannels="2" sampleFrequency="44100">http://192.168.0.10:50002/m/NDLNA/31298.wma</res>
+  </item>
+  <item id="22$@31299" parentID="22$3474" restricted="1">
+    <dc:title>07 Track 7</dc:title>
+    <upnp:class>object.item.audioItem.musicTrack</upnp:class>
+    <dc:date>2002-01-01</dc:date>
+    <upnp:album>As Heard on Radio Soulwax Part 2</upnp:album>
+    <upnp:albumArtist>2 Many DJ&apos;s</upnp:albumArtist>
+    <upnp:artist>2 Many DJ&apos;s</upnp:artist>
+    <dc:creator>2 Many DJ&apos;s</dc:creator>
+    <upnp:genre>Mix</upnp:genre>
+    <upnp:originalTrackNumber>7</upnp:originalTrackNumber>
+    <res  protocolInfo="http-get:*:audio/x-ms-wma:DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000" size="2859008" bitrate="16000" duration="0:02:57.000" nrAudioChannels="2" sampleFrequency="44100">http://192.168.0.10:50002/m/NDLNA/31299.wma</res>
+  </item>
+  <item id="22$@31300" parentID="22$3474" restricted="1">
+    <dc:title>08 Track 8</dc:title>
+    <upnp:class>object.item.audioItem.musicTrack</upnp:class>
+    <dc:date>2002-01-01</dc:date>
+    <upnp:album>As Heard on Radio Soulwax Part 2</upnp:album>
+    <upnp:albumArtist>2 Many DJ&apos;s</upnp:albumArtist>
+    <upnp:artist>2 Many DJ&apos;s</upnp:artist>
+    <dc:creator>2 Many DJ&apos;s</dc:creator>
+    <upnp:genre>Mix</upnp:genre>
+    <upnp:originalTrackNumber>8</upnp:originalTrackNumber>
+    <res  protocolInfo="http-get:*:audio/x-ms-wma:DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000" size="2449408" bitrate="16000" duration="0:02:31.000" nrAudioChannels="2" sampleFrequency="44100">http://192.168.0.10:50002/m/NDLNA/31300.wma</res>
+  </item>
+  <item id="22$@31301" parentID="22$3474" restricted="1">
+    <dc:title>09 Track 9</dc:title>
+    <upnp:class>object.item.audioItem.musicTrack</upnp:class>
+    <dc:date>2002-01-01</dc:date>
+    <upnp:album>As Heard on Radio Soulwax Part 2</upnp:album>
+    <upnp:albumArtist>2 Many DJ&apos;s</upnp:albumArtist>
+    <upnp:artist>2 Many DJ&apos;s</upnp:artist>
+    <dc:creator>2 Many DJ&apos;s</dc:creator>
+    <upnp:genre>Mix</upnp:genre>
+    <upnp:author>Etienne Roda-Gil</upnp:author>
+    <upnp:originalTrackNumber>9</upnp:originalTrackNumber>
+    <res  protocolInfo="http-get:*:audio/x-ms-wma:DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000" size="2408448" bitrate="16000" duration="0:02:29.000" nrAudioChannels="2" sampleFrequency="44100">http://192.168.0.10:50002/m/NDLNA/31301.wma</res>
+  </item>
+  <item id="22$@31302" parentID="22$3474" restricted="1">
+    <dc:title>10 Track 10</dc:title>
+    <upnp:class>object.item.audioItem.musicTrack</upnp:class>
+    <dc:date>2002-01-01</dc:date>
+    <upnp:album>As Heard on Radio Soulwax Part 2</upnp:album>
+    <upnp:albumArtist>2 Many DJ&apos;s</upnp:albumArtist>
+    <upnp:artist>2 Many DJ&apos;s</upnp:artist>
+    <dc:creator>2 Many DJ&apos;s</dc:creator>
+    <upnp:genre>Mix</upnp:genre>
+    <upnp:originalTrackNumber>10</upnp:originalTrackNumber>
+    <res  protocolInfo="http-get:*:audio/x-ms-wma:DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000" size="2969600" bitrate="16000" duration="0:03:04.000" nrAudioChannels="2" sampleFrequency="44100">http://192.168.0.10:50002/m/NDLNA/31302.wma</res>
+  </item>
+</DIDL-Lite>

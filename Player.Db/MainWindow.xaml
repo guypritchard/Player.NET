@@ -1,0 +1,58 @@
+﻿<Window x:Class="Player.Db.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:db="clr-namespace:Player.Db"
+        Title="Media Library" Height="600" Width="1000">
+    <Window.Resources>
+        <ResourceDictionary>
+            <Image x:Key="PlayImage" Source="Resources/Play.png"/>
+            <db:ImageConverter x:Key="ImageConverter" />
+        </ResourceDictionary>
+    </Window.Resources>
+    <StackPanel>
+        <ListView Name ="AlbumList" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="LayoutTransform">
+                        <Setter.Value>
+                            <ScaleTransform x:Name="transform" />
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <EventTrigger RoutedEvent="Loaded">
+                            <EventTrigger.Actions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger.Actions>
+                        </EventTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Width="{Binding (FrameworkElement.ActualWidth), RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}">
+                    </WrapPanel>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Button Click="ButtonBase_OnClick">
+                        <Grid>
+                            <Image Source="{Binding ImageBytes, Converter={StaticResource ImageConverter}, IsAsync=true}" HorizontalAlignment="Left" Width="150" Height="150"/>
+                            <Image Source="{Binding Path=Status}" Width="150" Height="150" ImageFailed="Image_OnImageFailed"/>
+                            <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" MaxWidth="150" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis"></TextBlock>
+                        </Grid>
+                    </Button>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <db:PlayerControl x:Name="PlayerControl">
+            
+        </db:PlayerControl>
+    </StackPanel>
+</Window>
+    

@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{61685311-FFA6-49C7-8F85-A62E41A79044}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DJPad.UI</RootNamespace>
+    <AssemblyName>DJPad.UI</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsAPICodePack-Core.1.1.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsAPICodePack-Shell.1.1.1\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX, Version=3.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.3.0.1\lib\net45\SharpDX.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1, Version=3.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct2D1.3.0.1\lib\net45\SharpDX.Direct2D1.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.DXGI, Version=3.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.DXGI.3.0.1\lib\net45\SharpDX.DXGI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\LightControl.cs" />
+    <Compile Include="Common\WatchableProperty.cs" />
+    <Compile Include="Direct2DControls\ImageCachingLightControl.cs" />
+    <Compile Include="Direct2DControls\LightButton.cs" />
+    <Compile Include="Direct2DControls\LightMenu.cs" />
+    <Compile Include="Direct2DControls\LightPanel.cs" />
+    <Compile Include="Direct2DControls\LightPlaylistItem.cs" />
+    <Compile Include="Direct2DControls\LightScroll.cs" />
+    <Compile Include="GDIControls\LightTextBox.cs" />
+    <Compile Include="GdiPlusChromelessForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Direct2DControls\LightTextPanel.cs" />
+    <Compile Include="GDIControls\ImageCachingLightControl.cs" />
+    <Compile Include="GDIControls\LightButton.cs" />
+    <Compile Include="GDIControls\LightMenu.cs" />
+    <Compile Include="GDIControls\LightPanel.cs" />
+    <Compile Include="GDIControls\LightPlaylist.cs" />
+    <Compile Include="GDIControls\LightPlaylistItem.cs" />
+    <Compile Include="GDIControls\LightScroll.cs" />
+    <Compile Include="GDIControls\LightTextPanel.cs" />
+    <Compile Include="Interfaces\IClickable.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Ui.cs" />
+    <Compile Include="WindowsSpecificShell.cs" />
+    <Compile Include="WindowState.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DJPad.Core\DJPad.Core.csproj">
+      <Project>{078ba54c-6b70-448a-a539-fed0adf7f81d}</Project>
+      <Name>DJPad.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DJPad.Interfaces\DJPad.Interfaces.csproj">
+      <Project>{5bad4cd8-4010-4056-ab5a-956c7d296578}</Project>
+      <Name>DJPad.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\External.mp3sharp\mp3sharp\Mp3Sharp.csproj">
+      <Project>{834cab58-648d-47cc-ac6f-d01c08c809a4}</Project>
+      <Name>Mp3Sharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Resources\DJPad.Resources.csproj">
+      <Project>{77afd80d-42a7-4935-b2bf-6451cda1336a}</Project>
+      <Name>DJPad.Resources</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
