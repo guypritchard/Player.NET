@@ -205,6 +205,7 @@ namespace DJPad.Player
                 {
                     if (Playlist.Repeat)
                     {
+                        Debug.WriteLine("Stop caught, repeat required.");
                         Playlist.Current.Source.Position = TimeSpan.Zero;
                         this.Play(Playlist.Current, this.KeepPlaying);
                         return;

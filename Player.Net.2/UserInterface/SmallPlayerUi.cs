@@ -31,7 +31,7 @@
             null,
         };
         private int backgroundVisIndex;
-        
+
         private bool UnderlayVis
         {
             get
@@ -51,10 +51,8 @@
             this.Size = new Size(400, 400);
             this.Player = state;
             this.Window = window;
-            this.Palette = this.Palette ?? Resources.Unknown.GetPalette();
+            this.Palette = this.Palette ?? (!Player.Playlist.Empty ? this.Player.Playlist.Current.SynchronousArt.GetPalette() : Resources.Unknown.GetPalette());
             this.Name = Resources.Player_Name;
-           
-            InitVisualisations(window.Repaint);
             
             this.Player.PlayStateChanged += (i, s) => window.Form.InvokeIfRequired(() =>
             {
@@ -72,6 +70,8 @@
                 }
             });
 
+            InitVisualisations(window.Repaint);
+
             return new List<LightControl<Bitmap>>
                                   {
                                       new LightButton
@@ -80,11 +80,11 @@
                                           OnDoubleClick = (p) => {
 
                                             // Hide the playlist if switching to another Ui.
-                                            if (this.playList.Visible)
+                                            if (this.playList != null && this.playList.Visible)
                                             {
                                                 this.playList.Hide();
                                             }
-                                            
+
                                             window.ChangeUi();
                                           },
 
@@ -105,7 +105,7 @@
                                           AlwaysVisible = true,
                                           Extents = new Rectangle(new Point(), this.Size),
                                           Image = () => Player.CanPlay && this.UnderlayVis
-                                              ? this.CurrentVisualisation.Draw(this.Size, Color.Transparent, Player.IsPlaying, Player.Playlist.Current.Source.Duration, this.Palette) 
+                                              ? this.CurrentVisualisation.Draw(this.Size, Color.Transparent, Player.IsPlaying, Player.Playlist.Current.Source.Duration, this.Palette)
                                               : null
                                       },
                                       new LightTextPanel()
@@ -121,8 +121,8 @@
                                                     },
                                           Font = new Font("Segoe UI Light", this.Size.Height/4, FontStyle.Bold),
                                           Justify = LightTextPanel.Justification.Center,
-                                          Color = () => this.UnderlayVis ? Palette.Brightest : Color.Gainsboro,
-                                          BorderColor = () => this.UnderlayVis ? Palette.Darkest : Color.SlateGray,
+                                          Color = () => Palette.Brightest.MakeTransparent(0.5f),
+                                          BorderColor = () => Palette.Darkest.MakeTransparent(0.7f),
                                           Text = () => Player.Playlist.Empty
                                                       ? string.Empty
                                                       : Player.Playlist.Current.Source.Position.Consise()
@@ -176,13 +176,13 @@
                                                         Width = Size.Width/16,
                                                         Height = Size.Height/16,
                                                     },
-                                          OnClick = p => 
+                                          OnClick = p =>
                                                     {
                                                         Player.Open();
                                                     },
-                                          Image = () => System.Windows.Forms.Control.ModifierKeys == System.Windows.Forms.Keys.Control 
-                                                              ? Resources.Player_Folder_Open 
-                                                              : Resources.Player_Folder 
+                                          Image = () => System.Windows.Forms.Control.ModifierKeys == System.Windows.Forms.Keys.Control
+                                                              ? Resources.Player_Folder_Open
+                                                              : Resources.Player_Folder
                                       },
                                       new LightButton
                                       {
@@ -194,7 +194,7 @@
                                                         Width = Size.Width/20,
                                                         Height = Size.Height/20,
                                                     },
-                                          OnClick = p => 
+                                          OnClick = p =>
                                                     {
                                                         this.playList = this.playList ?? new ChildWindow(new SmallPlaylistUi(), RelativePosition.Right, state, window);
 
@@ -210,10 +210,10 @@
                                                             state.Configuration.PlaylistVisible = true;
                                                         }
                                                     },
-                                          Image = () => this.playList != null && this.playList.Visible 
+                                          Image = () => this.playList != null && this.playList.Visible
                                                                       ? Resources.Player_List
                                                                       : Resources.Player_ListDisabled
-                                      },                
+                                      },
                                       new LightButton
                                       {
                                           Name = "Visualisation",
@@ -230,7 +230,7 @@
                                                         state.Configuration.Save();
                                                     },
                                           Image = () => Resources.VisualisationSettings
-                                      },                     
+                                      },
                                       new LightButton
                                       {
                                           Name = "Random",
@@ -286,7 +286,7 @@
                                                           return null;
                                                       }
 
-                                                      return Player.IsPlaying 
+                                                      return Player.IsPlaying
                                                           ? Resources.Player_Pause
                                                           : Resources.Player_Play;
                                                   }
@@ -331,15 +331,15 @@
                                                      {
                                                          var wasPlaying = Player.IsPlaying;
                                                          if (wasPlaying)
-                                                         { 
+                                                         {
                                                             Player.Stop();
                                                          }
-                                                         
+
                                                          double position = Player.Playlist.Current.Source.Duration.TotalMilliseconds*p / 100;
                                                          Player.Playlist.Current.Source.Position = TimeSpan.FromMilliseconds(position);
-                                                         
+
                                                          if (wasPlaying)
-                                                         { 
+                                                         {
                                                             Player.TogglePlay();
                                                          }
                                                      },
@@ -377,7 +377,7 @@
                                                     {
                                                         X = 0,
                                                         Y = Size.Height - 50,
-                                                        Height = 50, 
+                                                        Height = 50,
                                                         Width = Size.Width
                                                     }
                                       },
@@ -386,7 +386,7 @@
                                           Name = "Menu",
                                           Background = () => Color.FromArgb(20, 50, 50, 50),
                                           Extents = new Rectangle
-                                                    { 
+                                                    {
                                                         X = 0,
                                                         Y = 0,
                                                         Height = 21,

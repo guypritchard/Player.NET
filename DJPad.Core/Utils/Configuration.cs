@@ -17,7 +17,7 @@ namespace DJPad.Core.Utils
         public int Volume { get; set; }
 
         public int Mode { get; set; }
-        
+
         public int Visualisation { get; set; }
 
         public bool Randomise { get; set; }
@@ -25,6 +25,8 @@ namespace DJPad.Core.Utils
         public bool PlaylistVisible { get; set; }
 
         public string WatchDirectory { get; set; }
+
+        public bool Exploded { get; set; }
 
         [XmlIgnore]
         public static string DefaultLocation

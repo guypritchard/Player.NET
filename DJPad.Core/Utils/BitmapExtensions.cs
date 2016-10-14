@@ -105,6 +105,11 @@ namespace DJPad.Core.Utils
 
         public static ColorPalette GetPalette(this Bitmap bitmap)
         {
+            if (bitmap == null)
+            {
+                return null;
+            }
+
             return PaletteExtractor.ExtractPalette(bitmap);
         }
 

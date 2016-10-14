@@ -27,6 +27,21 @@
         {
             this.Icon = Resources.Player;
             this.playerState = new PlayerState(IoCContainer.Get<IMediaCorpus>());
+
+            // If we're crashing on don't immediately load the last file. 
+            if (this.playerState.Configuration.Exploded)
+            {
+                this.playerState.Configuration.LastFile = null;
+                this.playerState.Configuration.Save();
+            }
+
+            // Record that we died inexplicably - so we don't do the same thing again when we load up next time.
+            AppDomain.CurrentDomain.UnhandledException += (o, a) =>
+            {
+                this.playerState.Configuration.Exploded = true;
+                this.playerState.Configuration.Save();
+            };
+            
             this.listener = new MultimediaKeyListener();
             this.userInterfaces = new IUserInterface<Bitmap>[]
             {
@@ -34,7 +49,7 @@
                 new SmallPlayerUi(), 
                 new TinyPlayerUi()
             };
-
+                        
             this.listener.KeyPressed += (sender, args) =>
             {
                 switch (args.Key)
@@ -85,7 +100,7 @@
                             };
 
             this.playerState.Init();
-
+            
             this.playerState.PlayStateChanged += 
                 (i,s) => this.InvokeIfRequired(() =>
                 {
@@ -162,8 +177,9 @@
         private void SetVolumePosition()
         {
             var totalHeight = Screen.FromControl(this).Bounds.Bottom;
-            var height = totalHeight - (this.playerState.Configuration.Volume*totalHeight/100);
-            this.Location = new Point((Screen.FromControl(this).Bounds.Width - this.ClientSize.Width) / 2, height);
+            var height = totalHeight - (this.playerState.Configuration.Volume * totalHeight / 100);
+
+            this.Location = new Point(this.Location.X, height);
         }
     }
 }
