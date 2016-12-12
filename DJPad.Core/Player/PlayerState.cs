@@ -24,6 +24,11 @@ namespace DJPad.Player
         public PlayerState(IMediaCorpus corpus = null)
         {
             this.Configuration = ApplicationConfiguration.Load<PlayerConfiguration>(PlayerConfiguration.DefaultLocation);
+            if (this.Configuration.Volume == 0)
+            {
+                this.Configuration.Volume = 75;
+            }
+
             this.Playlist = new Playlist();
         }
 

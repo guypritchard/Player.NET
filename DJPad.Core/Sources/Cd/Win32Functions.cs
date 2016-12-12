@@ -359,7 +359,16 @@ namespace DJPad.Formats.Cda
                     try
                     {
                         IntPtr buffer = handle.AddrOfPinnedObject();
-                        buffer = (IntPtr)(buffer.ToInt32() + (Index * Marshal.SizeOf(typeof(TRACK_DATA))));
+
+                        if (IntPtr.Size == 8)
+                        {
+                            buffer = (IntPtr)(buffer.ToInt64() + (Index * Marshal.SizeOf(typeof(TRACK_DATA))));
+                        }
+                        else
+                        {
+                            buffer = (IntPtr)(buffer.ToInt32() + (Index * Marshal.SizeOf(typeof(TRACK_DATA))));
+                        }
+
                         res = (TRACK_DATA)Marshal.PtrToStructure(buffer, typeof(TRACK_DATA));
                     }
                     finally

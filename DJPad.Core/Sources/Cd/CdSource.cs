@@ -223,8 +223,14 @@
 
         public TimeSpan Position
         {
-            set { throw new NotImplementedException(); }
-            get { throw new NotImplementedException(); }
+            set
+            {
+               
+            }
+            get
+            {
+                return TimeSpan.Zero;
+            }
         }
     }
 }

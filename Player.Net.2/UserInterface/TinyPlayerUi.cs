@@ -173,7 +173,7 @@
                                                     {
                                                         Player.Next();
                                                     },
-                                          Image = () => Player.Playlist.End ? null : Resources.Player_Next
+                                          Image = () => !Player.CanPlay || Player.Playlist.End ? null : Resources.Player_Next
                                       },
                                       new LightButton
                                       {
@@ -189,7 +189,7 @@
                                                     {
                                                         Player.Previous();
                                                     },
-                                          Image = () => Player.Playlist.Start ? null : Resources.Player_Previous
+                                          Image = () => !Player.CanPlay || Player.Playlist.Start ? null : Resources.Player_Previous
                                       },
                                       new LightButton
                                       {
@@ -225,10 +225,10 @@
                                           Name = "Open",
                                           Extents = new Rectangle
                                                     {
-                                                        X = 6,
-                                                        Y = 6,
-                                                        Width = 40,
-                                                        Height = 40,
+                                                        X = 16,
+                                                        Y = 16,
+                                                        Width = 20,
+                                                        Height = 20,
                                                     },
                                         OnClick = p => 
                                                     {

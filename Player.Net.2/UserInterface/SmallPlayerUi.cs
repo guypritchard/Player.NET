@@ -51,7 +51,7 @@
             this.Size = new Size(400, 400);
             this.Player = state;
             this.Window = window;
-            this.Palette = this.Palette ?? (!Player.Playlist.Empty ? this.Player.Playlist.Current.SynchronousArt.GetPalette() : Resources.Unknown.GetPalette());
+            this.Palette = Resources.Unknown.GetPalette();
             this.Name = Resources.Player_Name;
             
             this.Player.PlayStateChanged += (i, s) => window.Form.InvokeIfRequired(() =>
@@ -62,6 +62,7 @@
 
                 if (s == Status.Playing || s == Status.Buffering)
                 {
+                    this.InitVisualisations(window.Repaint);
                     Window.StartRendering();
                 }
                 else
@@ -70,7 +71,7 @@
                 }
             });
 
-            InitVisualisations(window.Repaint);
+            // window.Form.Region = System.Drawing.Region.FromHrgn(WindowsSpecificShell.CreateRoundRectRgn(0, 0, this.Size.Width, this.Size.Height, 30, 30));
 
             return new List<LightControl<Bitmap>>
                                   {
@@ -121,8 +122,8 @@
                                                     },
                                           Font = new Font("Segoe UI Light", this.Size.Height/4, FontStyle.Bold),
                                           Justify = LightTextPanel.Justification.Center,
-                                          Color = () => Palette.Brightest.MakeTransparent(0.5f),
-                                          BorderColor = () => Palette.Darkest.MakeTransparent(0.7f),
+                                          Color = () => this.Palette.Brightest.MakeTransparent(0.5f),
+                                          BorderColor = () => this.Palette.Darkest.MakeTransparent(0.7f),
                                           Text = () => Player.Playlist.Empty
                                                       ? string.Empty
                                                       : Player.Playlist.Current.Source.Position.Consise()
@@ -225,11 +226,11 @@
                                                         Height = Size.Height/20,
                                                     },
                                           OnClick = p =>
-                                          {
+                                                    {
                                                         state.Configuration.Visualisation = ++this.backgroundVisIndex;
                                                         state.Configuration.Save();
                                                     },
-                                          Image = () => Resources.VisualisationSettings
+                                          Image = () => !Player.CanPlay ? null : Resources.VisualisationSettings
                                       },
                                       new LightButton
                                       {
@@ -272,11 +273,6 @@
                                                     },
                                           OnClick = p =>
                                                     {
-                                                        if (Player.CanPlay)
-                                                        {
-                                                            InitVisualisations(window.Repaint);
-                                                        }
-
                                                         Player.TogglePlay();
                                                     },
                                           Image = () =>
@@ -302,7 +298,7 @@
                                                         Height = Size.Height/4,
                                                     },
                                           OnClick = p => Player.Next(),
-                                          Image = () => Player.Playlist.End ? null : Resources.Player_Next
+                                          Image = () => !Player.CanPlay || Player.Playlist.End ? null : Resources.Player_Next
                                       },
                                       new LightButton
                                       {
@@ -315,7 +311,7 @@
                                                         Height = Size.Height/4,
                                                     },
                                           OnClick = p => Player.Previous(),
-                                          Image = () => Player.Playlist.Start ? null : Resources.Player_Previous
+                                          Image = () => !Player.CanPlay || Player.Playlist.Start ? null : Resources.Player_Previous
                                       },
                                       new LightScroll()
                                       {

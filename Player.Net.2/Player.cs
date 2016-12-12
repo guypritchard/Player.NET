@@ -113,6 +113,8 @@
                 {
                     var shell = new WindowsSpecificShell();
                     shell.SetOverlayIcon(this.Handle, this.playerState.Playlist.Current, this.playerState.IsPlaying);
+
+                    this.SetVolumePosition();
                 });
 
             if (!string.IsNullOrEmpty(this.playerState.Configuration.WatchDirectory))
@@ -150,8 +152,7 @@
             this.LightControlCollection.AddRange(layout);
             this.Text = userInterface.Name;
             this.MaximumSize = userInterface.Size;
-            this.ClientSize = userInterface.Size;
-            this.SetVolumePosition();
+            this.ClientSize = userInterface.Size;            
         }
 
         protected void ChangeUi()

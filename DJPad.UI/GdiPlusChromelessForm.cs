@@ -7,6 +7,7 @@ namespace DJPad.UI.GdiPlus
     using System.Diagnostics;
     using System.Drawing;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using System.Windows.Forms;
 
     public abstract class GdiPlusChromelessForm : Form

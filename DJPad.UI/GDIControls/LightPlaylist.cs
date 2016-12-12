@@ -160,7 +160,7 @@ namespace DJPad.UI.GdiPlus
             this.Image = () =>
             {
                 var list = List();
-                if (list != null)
+                if (list != null && !list.Empty)
                 {
                     //// The currently playing item has changed.
                     if (this.currentPosition != list.Current.Index)
@@ -283,8 +283,16 @@ namespace DJPad.UI.GdiPlus
             // Did the playlist change underneath us?
             if (this.playlistVersion != this.playlist().Loaded)
             {
-                this.currentPosition = playlist().Current.Index;
-                this.scrollPosition = this.currentPosition;
+                if (playlist().Empty)
+                {
+                    this.currentPosition = 0;
+                    this.scrollPosition = 0;
+                }
+                else
+                {
+                    this.currentPosition = playlist().Current.Index;
+                    this.scrollPosition = this.currentPosition;
+                }
 
                 this.TendVisibleItems();
 

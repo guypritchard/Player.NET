@@ -1,53 +1,21 @@
 ﻿namespace DJPad.Sources
 {
-    using System.Threading;
-    using System.Windows.Threading;
     using DJPad.Core;
     using DJPad.Core.Interfaces;
+    using DJPad.Core.Utils;
     using System;
     using System.Linq;
-    using System.Collections.Generic;
     using System.IO;
     using System.Runtime.InteropServices;
-    using System.Windows.Forms;
     using WindowsMediaLib;
     using System.Diagnostics;
 
     // http://www.freecovers.net/
-    internal class SampleData
-    {
-        public SampleData(int size = 0)
-        {
-            this.Data = new byte[size];
-        }
-
-        public byte[] Data { get; set; }
-        public long SampleTime { get; set; }
-
-        public void Combine(SampleData data)
-        {
-            this.SampleTime = data.SampleTime;
-            this.Data = this.Combine(this.Data, data.Data);
-        }
-
-        private byte[] Combine(params byte[][] arrays)
-        {
-            byte[] rv = new byte[arrays.Sum(a => a.Length)];
-            int offset = 0;
-            foreach (byte[] array in arrays) {
-                System.Buffer.BlockCopy(array, 0, rv, offset, array.Length);
-                offset += array.Length;
-            }
-            return rv;
-        }
-    }
-
-
     class WmaSource : IFileSource
     {
         private IMetadata metadata;
         private IWMSyncReader reader;
-        private List<SampleData> readData = new List<SampleData>();
+        private SampleBuffer buffer = new SampleBuffer();
 
         public string GetFileType()
         {
@@ -127,58 +95,31 @@
                 if (this.changePosition)
                 {
                     this.reader.SetRange((long)this.currentPosition.TotalMilliseconds*10000, 0);
-                    this.readData.Clear();
+                    this.buffer.Clear();
                     this.changePosition = false;
                 }
 
-                if (!this.readData.Any() || this.readData.First().Data.Length >= dataRequested)
+                if (!this.buffer.HasData || this.buffer.Length <= dataRequested)
                 {
                     var sample = this.ReadSampleData(dataRequested);
                     if (sample.Data.Length > 0)
                     {
-                        if (!this.readData.Any())
-                        {
-                            this.readData.Add(sample);
-                        }
-                        else
-                        {
-                            this.readData.First().Combine(sample);
-                        }
+                        this.buffer.Add(sample);
                     }
                 }
                 else
                 {
-                    Trace.WriteLine(string.Format("Requested: {0} Data Stored:{1}", dataRequested, this.readData.First().Data.Length));
+                    Trace.WriteLine(string.Format("Requested: {0} Data Stored:{1}", dataRequested, this.buffer.Length));
                 }
 
-                if (this.readData.Any())
+                if (this.buffer.HasData)
                 {
-                    var readData = this.readData.First();
-                    this.readData.Remove(readData);
                     returnSample.DataTotalLength = (long)(this.metadata.Duration.TotalSeconds * 10000000);
 
-                    if (dataRequested >= readData.Data.Length)
-                    {
-                        returnSample.Data = new byte[readData.Data.Length];
-                        returnSample.DataLength = readData.Data.Length;
-                        returnSample.DataOffset = readData.SampleTime;
-                        Array.Copy(readData.Data, 0, returnSample.Data, 0, readData.Data.Length);
-                    }
-                    else
-                    {
-                        returnSample.Data = new byte[dataRequested];
-                        returnSample.DataLength = dataRequested;
-                        returnSample.DataOffset = readData.SampleTime;
-                        Array.Copy(readData.Data, 0, returnSample.Data, 0, dataRequested);
-
-                        var newData = new SampleData(readData.Data.Length - dataRequested)
-                        {
-                            SampleTime = readData.SampleTime
-                        };
-
-                        Array.Copy(readData.Data, dataRequested, newData.Data, 0, readData.Data.Length - dataRequested);
-                        this.readData.Insert(0, newData);
-                    }
+                    var sample = this.buffer.GetData(dataRequested);
+                    returnSample.Data = sample.Data;
+                    returnSample.DataLength = sample.DataLength;
+                    returnSample.DataOffset = sample.DataOffset;
                 }
             }
 
@@ -199,18 +140,12 @@
                 }
                 catch (COMException)
                 {
-                    this.metadata = new SimpleMetadataSource
-                    {
-                        Album = "Unknown",
-                        Artist = "Unknown",
-                        Title = this.FileName
-                    };
+                    this.metadata = new SimpleMetadataSource { Title = this.FileName };
                 }
             }
 
             return this.metadata; 
         }
-
 
         private SampleData ReadSampleData(int dataRequested)
         {

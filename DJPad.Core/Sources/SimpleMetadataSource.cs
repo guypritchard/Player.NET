@@ -20,7 +20,11 @@
     public class SimpleMetadataSource : IMetadata
     {
         public SimpleMetadataSource()
-        { 
+        {
+            this.Album = "Unknown";
+            this.Artist = "Unknown";
+            this.Title = "Unknown";
+            this.Duration = TimeSpan.FromSeconds(0.0d); 
         }
 
         public SimpleMetadataSource(IMetadata data)

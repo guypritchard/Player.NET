@@ -141,7 +141,7 @@
 
         public bool Start
         {
-            get { return !this.Empty && this.previousIndex == -1; }
+            get { return !this.Empty && this.Previous == null; }
         }
 
         public bool End

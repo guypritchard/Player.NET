@@ -113,6 +113,7 @@
     <Compile Include="BeatDetector\BeatDetector.cs" />
     <Compile Include="BeatDetector\Event.cs" />
     <Compile Include="BeatDetector\FFT.cs" />
+    <Compile Include="Lib\BufferedSource.cs" />
     <Compile Include="Lib\CircularBuffer.cs" />
     <Compile Include="Lib\FFT\BeatrootFFT.cs" />
     <Compile Include="Lib\FFT\ComplexNumber.cs" />
@@ -142,6 +143,7 @@
     <Compile Include="Utils\AlternateArtSource.cs" />
     <Compile Include="Utils\AsyncLazy.cs" />
     <Compile Include="Utils\BpmDetector.cs" />
+    <Compile Include="Utils\Buffer.cs" />
     <Compile Include="Utils\CachingBitmapProducer.cs" />
     <Compile Include="Utils\ColorExtensions.cs" />
     <Compile Include="Utils\Filters.cs" />
@@ -156,7 +158,6 @@
     <Compile Include="Player\Playlist\Playlist.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sources\Cd\CdSource.cs" />
-    <Compile Include="Sources\Cd\CdReader.cs" />
     <Compile Include="Sources\Cd\Win32Functions.cs" />
     <Compile Include="Sources\Mp3\Id3MetadataSource.cs" />
     <Compile Include="Sources\Mp3\Mp3Source.cs" />
