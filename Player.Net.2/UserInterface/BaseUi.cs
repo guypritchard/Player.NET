@@ -17,6 +17,8 @@
 
         public Size Size { get; protected set; }
 
+        public bool TopMost { get; set; }
+
         public abstract IList<LightControl<Bitmap>> GenerateUI(PlayerState playerState, WindowState windowState);
 
         protected ColorPalette GetPalette()

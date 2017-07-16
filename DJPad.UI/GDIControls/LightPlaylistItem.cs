@@ -8,11 +8,14 @@ namespace DJPad.UI.GdiPlus
     using DJPad.Player;
     using DJPad.Core;
     using Resources;
+    using System.Collections.Concurrent;
 
     public class LightPlaylistItem : LightButton
     {
         private readonly CachingBitmapProducer<Bitmap> bitmapCache = new CachingBitmapProducer<Bitmap>();
-        
+
+        private static ConcurrentDictionary<string, Bitmap> albumArtCache = new ConcurrentDictionary<string, Bitmap>(); 
+
         public enum DrawMode { Banner, Playlist, Playlist_Small }
 
         public bool HideTime { get; set; }
@@ -176,9 +179,23 @@ namespace DJPad.UI.GdiPlus
 
                 if (Item() != null)
                 {
+                    var item = Item();
+
                     // This call can be expensive...
                     // Some caching/cleverness may be required.
-                    graphics.DrawImage(Item().Metadata.AlbumArt ?? Resources.Unknown, 3, 18, 30, 30);
+                    if (!item.HasLoadedMetadata)
+                    {
+                        graphics.DrawImage(Resources.Unknown, 3, 18, 30, 30); 
+                    }
+                    else if (!albumArtCache.ContainsKey(item.Metadata.Album))
+                    {
+                        albumArtCache.TryAdd(item.Metadata.Album, item.Metadata.AlbumArt.Resize(new Size(30, 30)));
+                        graphics.DrawImage(albumArtCache[item.Metadata.Album] ?? Resources.Unknown, 3, 18, 30, 30);
+                    }
+                    else
+                    {
+                        graphics.DrawImage(albumArtCache[item.Metadata.Album] ?? Resources.Unknown, 3, 18, 30, 30);
+                    }
 
                     var numberText = new MetadataTextImageProducer
                     {
@@ -191,7 +208,7 @@ namespace DJPad.UI.GdiPlus
                     }.DrawText(
                         string.Format(
                             "{0}.",
-                            Item().Index + 1),
+                            item.Index + 1),
                         Color.White,
                         Color.Transparent,
                         Color.SlateGray,
@@ -209,7 +226,7 @@ namespace DJPad.UI.GdiPlus
                             FormatFlags = StringFormatFlags.NoWrap,
                             Trimming = StringTrimming.EllipsisCharacter,
                         }
-                    }.DrawText(Item().Metadata.Title,
+                    }.DrawText(item.Metadata.Title,
                         Color.White,
                         Color.Transparent,
                         Color.SlateGray,
@@ -230,8 +247,8 @@ namespace DJPad.UI.GdiPlus
                     }.DrawText(
                         string.Format(
                             "{0}\r\n{1}",
-                            Item().Metadata.Album,
-                            Item().Metadata.Artist),
+                            item.Metadata.Album,
+                            item.Metadata.Artist),
                         Color.Azure,
                         Color.Transparent,
                         Color.SlateGray,

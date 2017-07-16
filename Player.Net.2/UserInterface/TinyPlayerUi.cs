@@ -23,6 +23,7 @@
             this.Size = new Size(400, 50);
             this.Player = state;
             this.Window = window;
+            this.TopMost = true;
             this.Palette = this.Palette ?? this.GetPalette();
             this.Name = Resources.Player_Name;
 
@@ -230,7 +231,7 @@
                                                         Width = 20,
                                                         Height = 20,
                                                     },
-                                        OnClick = p => 
+                                          OnClick = p => 
                                                     {
                                                         Player.Open();
                                                     },

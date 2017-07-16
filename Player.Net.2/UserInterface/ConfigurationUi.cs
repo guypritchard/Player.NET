@@ -20,7 +20,7 @@
             var background = Color.Black;
             this.Window = window;
 
-            // Window.StartRendering();
+            Window.StartRendering();
 
             return new List<LightControl<Bitmap>>
                 {

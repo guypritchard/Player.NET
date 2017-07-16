@@ -154,15 +154,15 @@
                     }
                 }
 
-                g.DrawLines(new Pen(palette.Saturated.MakeTransparent(0.2f)), circleL.ToArray());
-                g.DrawLines(new Pen(palette.Saturated.MakeTransparent(0.2f)), circleR.ToArray());
+                g.DrawLines(new Pen(palette.Saturated.MakeTransparent(0.9f)), circleL.ToArray());
+                g.DrawLines(new Pen(palette.Saturated.MakeTransparent(0.9f)), circleR.ToArray());
 
                 // Countdown
-                g.DrawLines(new Pen(palette.Brightest.MakeTransparent(0.2f), 8.0f), circleB.Take(completeGraphLength >= 2 ? completeGraphLength : 2).ToArray());
+                g.DrawLines(new Pen(palette.Brightest.MakeTransparent(0.8f), 8.0f), circleB.Take(completeGraphLength >= 2 ? completeGraphLength : 2).ToArray());
 
                 if (circleB.Skip(completeGraphLength >= 2 ? completeGraphLength : 0).Count() > 2)
                 {
-                    g.DrawLines(new Pen(palette.Darkest.MakeTransparent(0.2f), 8.0f), circleB.Skip(completeGraphLength >= 2 ? completeGraphLength : 0).ToArray());
+                    g.DrawLines(new Pen(palette.Darkest.MakeTransparent(0.8f), 8.0f), circleB.Skip(completeGraphLength >= 2 ? completeGraphLength : 0).ToArray());
                 }
             }
             catch (Exception e)
@@ -190,36 +190,36 @@
                 this.privateImage = new Bitmap(size.Width, size.Height, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
             }
 
-            var shrink = new Bitmap(size.Width, size.Height, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-            using (var g = Graphics.FromImage(shrink))
-            {
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Low; // or NearestNeighbour
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
-                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
-                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
+            //var shrink = new Bitmap(size.Width, size.Height, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+            //using (var g = Graphics.FromImage(shrink))
+            //{
+            //    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Low; // or NearestNeighbour
+            //    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+            //    g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+            //    g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
 
-                //ColorMatrix cm = new ColorMatrix();
-                //cm.Matrix33 = 0.85f;
-                //ImageAttributes ia = new ImageAttributes();
-                //ia.SetColorMatrix(cm);
+            //    //ColorMatrix cm = new ColorMatrix();
+            //    //cm.Matrix33 = 0.85f;
+            //    //ImageAttributes ia = new ImageAttributes();
+            //    //ia.SetColorMatrix(cm);
 
-                g.CompositingMode = CompositingMode.SourceOver;
-                
-                g.DrawImage(this.privateImage, new Rectangle(10 , 10, size.Width-20, size.Height-20), 0, 0, shrink.Height, shrink.Width, GraphicsUnit.Pixel);
-                
+            //    g.CompositingMode = CompositingMode.SourceOver;
+
+            //    g.DrawImage(this.privateImage, new Rectangle(10, 10, size.Width - 20, size.Height - 20), 0, 0, shrink.Height, shrink.Width, GraphicsUnit.Pixel);
+
                 this.Draw(
-                    Graphics.FromImage(this.privateImage), 
-                    backgroundColor, 
-                    size.Width, 
-                    size.Height, 
+                    Graphics.FromImage(this.privateImage),
+                    backgroundColor,
+                    size.Width,
+                    size.Height,
                     playing,
-                    duration, 
+                    duration,
                     palette);
 
-                g.DrawImageUnscaled(this.privateImage, 0, 0);
-            }
+            //    g.DrawImageUnscaled(this.privateImage, 0, 0);
+            //}
 
-            Graphics.FromImage(this.privateImage).DrawImage(shrink, 0, 0);
+            //Graphics.FromImage(this.privateImage).DrawImage(shrink, 0, 0);
 
             return this.privateImage;
         }

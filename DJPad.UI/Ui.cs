@@ -16,6 +16,9 @@
     {
         string Name { get; }
         Size Size { get; }
+
+        bool TopMost { get; }
+
         IList<LightControl<T>> GenerateUI(PlayerState playerState, WindowState windowState);
     }
 

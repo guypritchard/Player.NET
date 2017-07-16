@@ -44,6 +44,7 @@
         }
 
         private static readonly System.Timers.Timer WindowRefresh = new System.Timers.Timer(30);
+        public Func<bool> TopMost;
 
         public void StartRendering()
         {

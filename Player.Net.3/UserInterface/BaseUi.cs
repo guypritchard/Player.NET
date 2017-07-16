@@ -17,6 +17,8 @@
 
         public Size Size { get; protected set; }
 
+        public bool TopMost { get; protected set; }
+
         public abstract IList<LightControl<SharpDX.Direct2D1.Bitmap>> GenerateUI(PlayerState playerState, WindowState windowState);
 
         protected ColorPalette GetPalette()

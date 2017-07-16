@@ -12,6 +12,8 @@
 
         public Size Size { get; set; }
 
+        public bool TopMost { get; set; }
+
         public IList<LightControl<Bitmap>> GenerateUI(PlayerState state, WindowState window)
         {
             this.Size = new Size(400, 400);

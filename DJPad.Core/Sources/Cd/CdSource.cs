@@ -76,11 +76,6 @@
             return s;
         }
 
-        public long GetTotalLength()
-        {
-            throw new NotImplementedException();
-        }
-
         public void Load(string filename)
         {
             char driveLetter = filename.ToCharArray()[0];
@@ -96,11 +91,6 @@
             {
                 Win32Functions.CloseHandle(this.cdHandle);
             }
-        }
-
-        public void SeekTo(long pos)
-        {
-            throw new NotImplementedException();
         }
 
         public void InitializeDrive(char driveLetter)
@@ -139,7 +129,7 @@
 
                 this.lengthOfTrack = TimeSpan.FromSeconds(this.cdToc.TrackData[trackNumber].MSF2LBA() / 75);
 
-                this.LockCD();
+                // this.LockCD();
             }
         }
 
@@ -218,7 +208,10 @@
 
         public bool EndOfFile
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return this.stopAt <= this.lastAt;
+            }
         }
 
         public TimeSpan Position
@@ -229,7 +222,7 @@
             }
             get
             {
-                return TimeSpan.Zero;
+                return TimeSpan.FromSeconds(this.stopAt - this.stopAt / 75);
             }
         }
     }

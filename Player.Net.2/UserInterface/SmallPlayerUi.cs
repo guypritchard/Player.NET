@@ -18,6 +18,7 @@
     {
         private ColorPalette Palette;
         private ChildWindow playList;
+        private ChildWindow configuration;
 
         private readonly IVisualisation[] allBackgroundVisualisations =
         {
@@ -141,32 +142,32 @@
                                           SourceImage = c => BitmapExtensions.CreateImage(new Size(Size.Width, Size.Height), Color.FromArgb(150, 50, 50, 50))
                                       },
                                       // Not ready yet...
-                                      //new LightButton
-                                      //{
-                                      //    Name = "Settings",
-                                      //    Extents = new Rectangle
-                                      //              {
-                                      //                  X = Size.Width/2 - Size.Width/4,
-                                      //                  Y = Size.Height/2 + Size.Height/8,
-                                      //                  Width = Size.Width/16,
-                                      //                  Height = Size.Height/16,
-                                      //              },
-                                      //    OnClick = p =>
-                                      //              {
-                                      //                  this.configuration = this.configuration ?? new ChildWindow(new ConfigurationUi(), RelativePosition.Left, state, window);
+                                      new LightButton
+                                      {
+                                          Name = "Settings",
+                                          Extents = new Rectangle
+                                                    {
+                                                        X = Size.Width/2 - Size.Width/4,
+                                                        Y = Size.Height/2 + Size.Height/8,
+                                                        Width = Size.Width/16,
+                                                        Height = Size.Height/16,
+                                                    },
+                                          OnClick = p =>
+                                                    {
+                                                        this.configuration = this.configuration ?? new ChildWindow(new ConfigurationUi(), RelativePosition.Left, state, window);
 
-                                      //                  if (this.configuration.Visible)
-                                      //                  {
-                                      //                      this.configuration.Hide();
-                                      //                  }
-                                      //                  else
-                                      //                  {
-                                      //                      this.configuration.Location = new Point(window.Location().X - Size.Width, window.Location().Y);
-                                      //                      this.configuration.Show(this.Window.Form);
-                                      //                  }
-                                      //              },
-                                      //    Image = () => Resources.Settings
-                                      //},
+                                                        if (this.configuration.Visible)
+                                                        {
+                                                            this.configuration.Hide();
+                                                        }
+                                                        else
+                                                        {
+                                                            this.configuration.Location = new Point(window.Location().X - Size.Width, window.Location().Y);
+                                                            this.configuration.Show(this.Window.Form);
+                                                        }
+                                                    },
+                                          Image = () => Resources.Settings
+                                      },
                                       new LightButton
                                       {
                                           Name = "Open",
@@ -190,8 +191,8 @@
                                           Name = "Playlist",
                                           Extents = new Rectangle
                                                     {
-                                                        X = Size.Width/2 - Size.Width/8,
-                                                        Y = Size.Height/2 - Size.Width/12,
+                                                        X = Size.Width - Size.Width/12,
+                                                        Y = Size.Height/2 - Size.Width/40,
                                                         Width = Size.Width/20,
                                                         Height = Size.Height/20,
                                                     },
@@ -220,17 +221,17 @@
                                           Name = "Visualisation",
                                           Extents = new Rectangle
                                                     {
-                                                        X = Size.Width/2 - Size.Width/8,
-                                                        Y = Size.Height/2 + Size.Width/32,
-                                                        Width = Size.Width/20,
-                                                        Height = Size.Height/20,
+                                                        X = Size.Width/2 - Size.Width/32,
+                                                        Y = Size.Height/2 + Size.Width/10,
+                                                        Width = Size.Width/16,
+                                                        Height = Size.Height/16,
                                                     },
                                           OnClick = p =>
                                                     {
                                                         state.Configuration.Visualisation = ++this.backgroundVisIndex;
                                                         state.Configuration.Save();
                                                     },
-                                          Image = () => !Player.CanPlay ? null : Resources.VisualisationSettings
+                                          Image = () => !Player.CanPlay ? null : Resources.Settings
                                       },
                                       new LightButton
                                       {

@@ -28,6 +28,8 @@
             this.Icon = Resources.Player;
             this.playerState = new PlayerState(IoCContainer.Get<IMediaCorpus>());
 
+            this.AutoScaleMode = AutoScaleMode.Dpi;
+
             // If we're crashing on don't immediately load the last file. 
             if (this.playerState.Configuration.Exploded)
             {
@@ -97,6 +99,7 @@
                                 Location = () => this.Location,
                                 Form = this,
                                 ChangeUi = () => this.ChangeUi(),
+                                TopMost = () => this.TopMost, 
                             };
 
             this.playerState.Init();
@@ -150,6 +153,7 @@
             var layout = userInterface.GenerateUI(this.playerState, this.windowState);
             this.LightControlCollection.Clear();
             this.LightControlCollection.AddRange(layout);
+            this.TopMost = userInterface.TopMost;
             this.Text = userInterface.Name;
             this.MaximumSize = userInterface.Size;
             this.ClientSize = userInterface.Size;            

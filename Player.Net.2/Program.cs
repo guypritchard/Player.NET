@@ -17,7 +17,6 @@
         {
             IoCContainer.AddMapping<IMediaCorpus, SqlCeMediaCorpus>(true);
 
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
