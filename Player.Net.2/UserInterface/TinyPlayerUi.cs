@@ -29,6 +29,8 @@
 
             this.Visualisation.SampleSource = Player.Audio;
 
+           //  window.Form.Region = System.Drawing.Region.FromHrgn(WindowsSpecificShell.CreateRoundRectRgn(0, 0, this.Size.Width, this.Size.Height, 5, 5));
+
             this.Player.PlayStateChanged += (i, s) => window.Form.InvokeIfRequired(() =>
             {
                 this.Palette = Player.Playlist.Empty || Player.Playlist.Current.Metadata.AlbumArt == null

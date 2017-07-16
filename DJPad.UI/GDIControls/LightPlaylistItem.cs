@@ -189,7 +189,11 @@ namespace DJPad.UI.GdiPlus
                     }
                     else if (!albumArtCache.ContainsKey(item.Metadata.Album))
                     {
-                        albumArtCache.TryAdd(item.Metadata.Album, item.Metadata.AlbumArt.Resize(new Size(30, 30)));
+                        albumArtCache.TryAdd(
+                            item.Metadata.Album,
+                            item.Metadata.AlbumArt == null 
+                            ? Resources.Unknown.Resize(new Size(30, 30))
+                            : item.Metadata.AlbumArt.Resize(new Size(30, 30)));
                         graphics.DrawImage(albumArtCache[item.Metadata.Album] ?? Resources.Unknown, 3, 18, 30, 30);
                     }
                     else

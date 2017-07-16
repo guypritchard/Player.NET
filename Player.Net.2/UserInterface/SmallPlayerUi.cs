@@ -72,7 +72,7 @@
                 }
             });
 
-            // window.Form.Region = System.Drawing.Region.FromHrgn(WindowsSpecificShell.CreateRoundRectRgn(0, 0, this.Size.Width, this.Size.Height, 30, 30));
+            // window.Form.Region = System.Drawing.Region.FromHrgn(WindowsSpecificShell.CreateRoundRectRgn(0, 0, this.Size.Width, this.Size.Height, 5, 5));
 
             return new List<LightControl<Bitmap>>
                                   {
@@ -142,32 +142,32 @@
                                           SourceImage = c => BitmapExtensions.CreateImage(new Size(Size.Width, Size.Height), Color.FromArgb(150, 50, 50, 50))
                                       },
                                       // Not ready yet...
-                                      new LightButton
-                                      {
-                                          Name = "Settings",
-                                          Extents = new Rectangle
-                                                    {
-                                                        X = Size.Width/2 - Size.Width/4,
-                                                        Y = Size.Height/2 + Size.Height/8,
-                                                        Width = Size.Width/16,
-                                                        Height = Size.Height/16,
-                                                    },
-                                          OnClick = p =>
-                                                    {
-                                                        this.configuration = this.configuration ?? new ChildWindow(new ConfigurationUi(), RelativePosition.Left, state, window);
+                                      //new LightButton
+                                      //{
+                                      //    Name = "Settings",
+                                      //    Extents = new Rectangle
+                                      //              {
+                                      //                  X = Size.Width/2 - Size.Width/4,
+                                      //                  Y = Size.Height/2 + Size.Height/8,
+                                      //                  Width = Size.Width/16,
+                                      //                  Height = Size.Height/16,
+                                      //              },
+                                      //    OnClick = p =>
+                                      //              {
+                                      //                  this.configuration = this.configuration ?? new ChildWindow(new ConfigurationUi(), RelativePosition.Left, state, window);
 
-                                                        if (this.configuration.Visible)
-                                                        {
-                                                            this.configuration.Hide();
-                                                        }
-                                                        else
-                                                        {
-                                                            this.configuration.Location = new Point(window.Location().X - Size.Width, window.Location().Y);
-                                                            this.configuration.Show(this.Window.Form);
-                                                        }
-                                                    },
-                                          Image = () => Resources.Settings
-                                      },
+                                      //                  if (this.configuration.Visible)
+                                      //                  {
+                                      //                      this.configuration.Hide();
+                                      //                  }
+                                      //                  else
+                                      //                  {
+                                      //                      this.configuration.Location = new Point(window.Location().X - Size.Width, window.Location().Y);
+                                      //                      this.configuration.Show(this.Window.Form);
+                                      //                  }
+                                      //              },
+                                      //    Image = () => Resources.Settings
+                                      //},
                                       new LightButton
                                       {
                                           Name = "Open",

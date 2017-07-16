@@ -120,29 +120,29 @@
                     this.SetVolumePosition();
                 });
 
-            if (!string.IsNullOrEmpty(this.playerState.Configuration.WatchDirectory))
-            {
-                this.scanner = new Scanner(
-                    this.playerState.Configuration.WatchDirectory, 
-                    SourceRegistry.GetSupportedFileTypes(),
-                    directory =>
-                    {
-                         var corpus = IoCContainer.Get<IMediaCorpus>();
-                         Debug.WriteLine(directory);
-                         corpus.Initialize(directory, forceRecreate: true);
-                    },
-                    supportedFile =>
-                    {
-                        var corpus = IoCContainer.Get<IMediaCorpus>();
-                        Debug.WriteLine(supportedFile);
-                        var source = SourceRegistry.ResolveSource(supportedFile, true);
-                        source.Load(supportedFile);
-                        var metadata = source.GetMetadata();
-                        corpus.AddOrUpdate(metadata, supportedFile);
-                    });
+            //if (!string.IsNullOrEmpty(this.playerState.Configuration.WatchDirectory))
+            //{
+            //    this.scanner = new Scanner(
+            //        this.playerState.Configuration.WatchDirectory, 
+            //        SourceRegistry.GetSupportedFileTypes(),
+            //        directory =>
+            //        {
+            //             var corpus = IoCContainer.Get<IMediaCorpus>();
+            //             Debug.WriteLine(directory);
+            //             corpus.Initialize(directory, forceRecreate: true);
+            //        },
+            //        supportedFile =>
+            //        {
+            //            var corpus = IoCContainer.Get<IMediaCorpus>();
+            //            Debug.WriteLine(supportedFile);
+            //            var source = SourceRegistry.ResolveSource(supportedFile, true);
+            //            source.Load(supportedFile);
+            //            var metadata = source.GetMetadata();
+            //            corpus.AddOrUpdate(metadata, supportedFile);
+            //        });
 
-                this.scanner.Scan();
-            }
+            //    this.scanner.Scan();
+            //}
 
             this.Initialize();
         }

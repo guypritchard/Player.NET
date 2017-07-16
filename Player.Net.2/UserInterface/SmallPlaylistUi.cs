@@ -19,8 +19,6 @@
             this.Size = new Size(400, 400);
             var background = Color.Black;
 
-            state.PlaylistChanged += () => window.Repaint();
-
             return new List<LightControl<Bitmap>>
                 {
                     new DJPad.UI.GdiPlus.LightPlaylist
