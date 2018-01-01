@@ -171,3 +171,6 @@ $RECYCLE.BIN/
 # Scala Stuff
 target/
 .idea/
+
+# Visual Studio Code bits.
+.vs/

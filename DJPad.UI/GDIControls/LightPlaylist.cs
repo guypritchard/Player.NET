@@ -84,13 +84,9 @@ namespace DJPad.UI.GdiPlus
                                         Bitmap image = i.Image();
                                         if (i.Item() == List().Current)
                                         {
-                                            image = image.Overlay(BitmapExtensions.CreateImage(image.Size, Color.FromArgb(70, 128, 128, 128)))
-                                                         .Overlay(BitmapExtensions.CreateImage(
-                                                             new Size(3, image.Height), 
-                                                             i.Item().SynchronousArt != null 
-                                                             ? i.Item().SynchronousArt.GetPalette().Brightest
-                                                             : Resources.Unknown.GetPalette().Brightest))
-                                                         .Overlay(this.IsPlaying() ? Resources.Player_Play_Small : Resources.Player_Pause_Small, new Rectangle(5, 20, 25, 25));
+                                            //image = image.Overlay(BitmapExtensions.CreateImage(image.Size, Color.FromArgb(70, 128, 128, 128)))
+                                            //             .Overlay(BitmapExtensions.CreateImage(new Size(3, image.Height),Color.White))
+                                            //             .Overlay(this.IsPlaying() ? Resources.Player_Play_Small : Resources.Player_Pause_Small, new Rectangle(5, 20, 25, 25));
                                         }
 
                                         // Experimental scroll position drawing.
@@ -116,9 +112,9 @@ namespace DJPad.UI.GdiPlus
                         yPos += image.Height;
                     }
 
-                    var positionColor = List().Current.SynchronousArt != null
-                        ? List().Current.SynchronousArt.GetPalette().Brightest
-                        : Resources.Unknown.GetPalette().Brightest;
+                    //var positionColor = List().Current.SynchronousArt != null
+                    //    ? List().Current.SynchronousArt.GetPalette().Brightest
+                    //    : Resources.Unknown.GetPalette().Brightest;
                     
                     var positionOfCurrent = (float)List().Current.Index/List().Count;
                     var percentageScrolled = this.scrollPosition <= 0 ? 0.0f : (float)this.scrollPosition/List().Count;
@@ -151,7 +147,7 @@ namespace DJPad.UI.GdiPlus
                        bottom - top);
 
                     graphics.FillRectangle(new SolidBrush(Color.White), this.Extents.Width - 5, (int)(this.Extents.Height * percentageScrolled), 10, 10);
-                    graphics.FillRectangle(new SolidBrush(positionColor), this.Extents.Width - 5, (int)(this.Extents.Height * positionOfCurrent), 10, 10);
+                    graphics.FillRectangle(new SolidBrush(Color.White), this.Extents.Width - 5, (int)(this.Extents.Height * positionOfCurrent), 10, 10);
                 }
 
                 return newImage;

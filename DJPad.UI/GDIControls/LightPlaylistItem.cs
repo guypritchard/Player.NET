@@ -50,15 +50,16 @@ namespace DJPad.UI.GdiPlus
             this.Image = () =>
             {
                 var item = Item();
-                if (item != null)
+                if (item == null)
                 {
-                    var cacheKey = item + 
-                                   (Playlist != null ? Playlist().CurrentIndex.ToString() : string.Empty) +
-                                   Playlist().Loaded + "_" + item.HasLoadedMetadata;
-
-                    return this.bitmapCache.GetBitmap(cacheKey);
+                    return null;
                 }
-                return null;
+
+                var cacheKey = item + 
+                               (Playlist != null ? Playlist().CurrentIndex.ToString() : string.Empty) +
+                               Playlist().Loaded + "_" + item.HasLoadedMetadata;
+
+                return this.bitmapCache.GetBitmap(cacheKey);
             };
         }
 
