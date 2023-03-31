@@ -256,7 +256,7 @@
                                                   new LightButton
                                                   {
                                                       Name = "Exit",
-                                                      Extents = new Rectangle { Y = 0, X = Size.Width - 15, Height = 14, Width = 14 },
+                                                      Extents = new Rectangle { Y = 2, X = Size.Width - 17, Height = 14, Width = 14 },
                                                       OnClick = p =>
                                                                 {
                                                                     Window.Close();

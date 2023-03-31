@@ -193,7 +193,9 @@ namespace DJPad.Player
 
         public bool IsPlaying
         {
-            get { return this.CanPlay && (this.Audio.State == Status.Buffering || this.Audio.State == Status.Playing || this.Audio.State == Status.Stopping); }
+            get { return this.Audio != null &&
+                    this.CanPlay && 
+                    (this.Audio.State == Status.Buffering || this.Audio.State == Status.Playing || this.Audio.State == Status.Stopping); }
         }
 
         public bool KeepPlaying

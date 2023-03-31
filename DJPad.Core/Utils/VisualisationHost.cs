@@ -20,6 +20,10 @@
             this.LastPaint = DateTime.UtcNow;
 
             this.InitializeComponent();
+
+#if DEBUG
+            this.DisplayFPS = true;
+#endif
         }
 
         protected override void OnPaint(PaintEventArgs e)

@@ -9,6 +9,7 @@
     using DJPad.Core.Interfaces;
     using DJPad.Types;
     using System.Drawing.Imaging;
+    using System.Drawing.Drawing2D;
 
     public abstract class FftBasedVisualisation : IVisualisation
     {
@@ -20,10 +21,6 @@
 
         public event Action Redraw;
 
-        private readonly bool DisplayFps;
-
-        private DateTime LastPaint;
-
         private readonly int[] FPSdata = Enumerable.Repeat(0, 20).ToArray();
         private long drawCount;
 
@@ -34,12 +31,6 @@
         protected FftBasedVisualisation(int redrawInterval, bool displayFps = false)
         {
             this.fftTransform = new KJFFT(2048);
-            this.DisplayFps = displayFps;
-            this.LastPaint = DateTime.UtcNow;
-
-#if DEBUG
-            this.DisplayFps = true;
-#endif
 
             if (redrawInterval > 0)
             {
@@ -66,17 +57,12 @@
             if (this.SampleSource != null)
             {
                 var graphics = Graphics.FromImage(this.privateImage);
+                graphics.CompositingMode = CompositingMode.SourceOver;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
                 this.Draw(graphics, backgroundColor, size.Width, size.Height, playing, duration, palette);
-
-                if (!this.DisplayFps)
-                {
-                    return this.privateImage;
-                }
-
-                this.FPSdata[drawCount++ % this.FPSdata.Length] = (int)(DateTime.UtcNow - this.LastPaint).TotalMilliseconds;
-                graphics.FillRectangle(Brushes.Black, new Rectangle(0, 0, 50, 20));
-                graphics.DrawString(string.Format("{0:0}fps", (1000 / this.FPSdata.Average())), new Font("Arial", 12.0f, FontStyle.Bold), Brushes.White, 0, 0);
-                this.LastPaint = DateTime.UtcNow;
             }
 
             return this.privateImage;

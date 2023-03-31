@@ -1,5 +1,6 @@
 namespace DJPad.UI.GdiPlus
 {
+    using DJPad.Formats.Wave;
     using DJPad.UI.GdiPlus;
     using DJPad.UI.Interfaces;
     using System;
@@ -68,6 +69,10 @@ namespace DJPad.UI.GdiPlus
                     this.displayControlTimer.Enabled = false;
                     this.Invalidate();
                 });
+
+            var attribute = WindowsNative.DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE;
+            var preference = WindowsNative.DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND;
+            WindowsNative.DwmSetWindowAttribute(this.Handle, attribute, ref preference, sizeof(uint));
         }
 
         void LightOnKeyPress(int wParam, int lParam)

@@ -121,7 +121,7 @@
                                                         Width = Size.Width,
                                                         Height = Size.Height
                                                     },
-                                          Font = new Font("Segoe UI Light", this.Size.Height/4, FontStyle.Bold),
+                                          Font = new Font("Lucida Console", this.Size.Height/6, FontStyle.Regular),
                                           Justify = LightTextPanel.Justification.Center,
                                           Color = () => this.Palette.Brightest.MakeTransparent(0.5f),
                                           BorderColor = () => this.Palette.Darkest.MakeTransparent(0.7f),
