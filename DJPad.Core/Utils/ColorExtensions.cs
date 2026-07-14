@@ -7,8 +7,7 @@ namespace DJPad.Core.Utils
     using System.Text;
     using System.Threading.Tasks;
     using System.Drawing;
-    using SharpDX.Direct2D1;
-    using SharpDX.Mathematics.Interop;
+    using Color4 = Vortice.Mathematics.Color4;
 
     public static class ColorExtensions
     {
@@ -36,10 +35,9 @@ namespace DJPad.Core.Utils
             return Color.FromArgb((int)(255 * opacity), color.R, color.G, color.B);
         }
 
-        public static RawColor4 ToRawColor4(this Color color)
+        public static Color4 ToColor4(this Color color)
         {
-            var rawColor4 = new RawColor4(color.R / 255.0f, color.G /255.0f, color.B/255.0f, color.A/255.0f);
-            return rawColor4;
+            return new Color4(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f, color.A / 255.0f);
         }
     }
 }

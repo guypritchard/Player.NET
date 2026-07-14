@@ -1,6 +1,8 @@
 namespace DJPad.UI.D2D
 {
-    public class D2DLightPanel : LightControl<SharpDX.Direct2D1.Bitmap>
+    using Vortice.Direct2D1;
+
+    public class D2DLightPanel : LightControl<ID2D1Bitmap>
     {
     }
 }

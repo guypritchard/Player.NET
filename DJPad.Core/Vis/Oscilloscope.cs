@@ -37,13 +37,18 @@
         public void Draw(Graphics g, Color backgroundColor, int width, int height, bool playing = true, TimeSpan? duration = null, ColorPalette palette = null)
         {
             const int MinimumSamplesToDraw = 300;
+            g.CompositingMode = CompositingMode.SourceCopy;
             
             if (duration.HasValue)
             {
                 this.Total = duration.Value;
             }
 
-            g.FillRectangle(new SolidBrush(backgroundColor), new Rectangle(0, 0, width, height));
+            using (var background = new SolidBrush(backgroundColor))
+            {
+                g.FillRectangle(background, new Rectangle(0, 0, width, height));
+            }
+            g.CompositingMode = CompositingMode.SourceOver;
 
             if (this.SampleSource == null)
             {
@@ -116,10 +121,13 @@
 
             try
             {
-                g.DrawLines(new Pen(palette.Saturated), leftgraph);
-                g.DrawLines(new Pen(palette.Saturated), rightgraph);
-                g.DrawLines(new Pen(Color.FromArgb(200, palette.Brightest), 4.0f), bothgraph.Take(completeGraphLength >= 2 ? completeGraphLength : 2).ToArray());
-                g.DrawLines(new Pen(Color.FromArgb(200, palette.Darkest), 4.0f), bothgraph.Skip(completeGraphLength >= 2 ? completeGraphLength : 0).ToArray());
+                using var channelPen = new Pen(palette.Saturated);
+                using var playedPen = new Pen(Color.FromArgb(200, palette.Brightest), 4.0f);
+                using var remainingPen = new Pen(Color.FromArgb(200, palette.Darkest), 4.0f);
+                g.DrawLines(channelPen, leftgraph);
+                g.DrawLines(channelPen, rightgraph);
+                g.DrawLines(playedPen, bothgraph.Take(completeGraphLength >= 2 ? completeGraphLength : 2).ToArray());
+                g.DrawLines(remainingPen, bothgraph.Skip(completeGraphLength >= 2 ? completeGraphLength : 0).ToArray());
             }
             catch (Exception e)
             {
@@ -129,12 +137,13 @@
 
         public Bitmap Draw(Size size, Color backgroundColor, bool playing = true, TimeSpan? duration = null, ColorPalette palette = null)
         {
-            if (this.privateImage == null || this.privateImage.Height != size.Height || this.privateImage.Width != size.Width || backgroundColor == Color.Transparent)
+            if (this.privateImage == null || this.privateImage.Height != size.Height || this.privateImage.Width != size.Width)
             {
                 this.privateImage = new Bitmap(size.Width, size.Height, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
             }
 
-            this.Draw(Graphics.FromImage(this.privateImage), backgroundColor, size.Width, size.Height, playing, duration, palette);
+            using var graphics = Graphics.FromImage(this.privateImage);
+            this.Draw(graphics, backgroundColor, size.Width, size.Height, playing, duration, palette);
 
             return this.privateImage;
         }

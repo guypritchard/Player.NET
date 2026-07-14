@@ -10,7 +10,7 @@
     using System;
     using System.Drawing;
 
-    internal class Id3MetadataSource : IMetadata
+    internal class Id3MetadataSource : IMetadata, IEmbeddedArtworkMetadata
     {
         #region Fields
 
@@ -67,33 +67,26 @@
         {
             get
             {
-                var art = this.getTagImage(Id3FrameType.APIC) ?? AlternateArtSource.FileSourceArt(Path.GetDirectoryName(this.fileName));
-
-                // If we didn't find a poster in Id3 - we can scan for Folder.jpg and AlbumArt_{Guid}_{Size}.jpg
-                if (art != null && art.Length > 0)
-                {
-                    try
-                    {
-                        return (Bitmap) Image.FromStream(new MemoryStream(art));
-                    }
-                    catch (ArgumentException)
-                    {
-                        //try
-                        //{
-                        //    using (var ms = new MemoryStream(art))
-                        //    using (var fs = File.OpenWrite("BadImage.dat"))
-                        //    {
-                        //        ms.CopyTo(fs);
-                        //    }
-                        //}
-                        //catch
-                        //{
-                        //}
-                    }
-                }
-
-                return null;
+                return this.EmbeddedAlbumArt
+                    ?? this.DecodeArtwork(AlternateArtSource.FileSourceArt(Path.GetDirectoryName(this.fileName)));
             }
+        }
+
+        public Bitmap EmbeddedAlbumArt => this.DecodeArtwork(this.getTagImage(Id3FrameType.APIC));
+
+        private Bitmap DecodeArtwork(byte[] art)
+        {
+            if (art != null && art.Length > 0)
+            {
+                try
+                {
+                    return (Bitmap)Image.FromStream(new MemoryStream(art));
+                }
+                catch (ArgumentException)
+                {
+                }
+            }
+            return null;
         }
 
         public TimeSpan Duration

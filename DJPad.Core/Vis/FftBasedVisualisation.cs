@@ -2,8 +2,6 @@
 {
     using System;
     using System.Drawing;
-    using System.Linq;
-    using System.Timers;
     using DJPad.Core;
     using DJPad.Lib.FFT;
     using DJPad.Core.Interfaces;
@@ -13,38 +11,17 @@
 
     public abstract class FftBasedVisualisation : IVisualisation
     {
-        protected Timer drawTimer;
-
         protected IFFT fftTransform;
 
-        private Bitmap privateImage;
-
-        public event Action Redraw;
-
-        private readonly int[] FPSdata = Enumerable.Repeat(0, 20).ToArray();
-        private long drawCount;
+        protected Bitmap privateImage;
 
         protected Sample copiedSample;
 
         protected abstract void DrawChannel(Graphics g, int width, int height, Sample.Channel channel, int zoom = 1, DJPad.Types.ColorPalette palette = null);
 
-        protected FftBasedVisualisation(int redrawInterval, bool displayFps = false)
+        protected FftBasedVisualisation()
         {
             this.fftTransform = new KJFFT(2048);
-
-            if (redrawInterval > 0)
-            {
-                drawTimer = new Timer(redrawInterval);
-                drawTimer.Elapsed += (o, e) =>
-                {
-                    if (this.Redraw != null)
-                    {
-                        this.Redraw();
-                    }
-                };
-
-                drawTimer.Start();
-            }
         }
 
         public Bitmap Draw(Size size, Color backgroundColor, bool playing = true, TimeSpan? duration = null, DJPad.Types.ColorPalette palette = null)
@@ -56,7 +33,7 @@
 
             if (this.SampleSource != null)
             {
-                var graphics = Graphics.FromImage(this.privateImage);
+                using var graphics = Graphics.FromImage(this.privateImage);
                 graphics.CompositingMode = CompositingMode.SourceOver;
                 graphics.CompositingQuality = CompositingQuality.HighQuality;
                 graphics.SmoothingMode = SmoothingMode.HighQuality;

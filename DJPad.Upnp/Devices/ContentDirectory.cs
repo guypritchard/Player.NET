@@ -9,7 +9,7 @@ namespace UPnPTest.Devices
     using System.Configuration;
     using System.Diagnostics;
     using System.IO;
-    using System.Net;
+    using System.Net.Http;
     using System.Security.Policy;
     using System.Xml;
     using System.Xml.Serialization;
@@ -17,6 +17,7 @@ namespace UPnPTest.Devices
     // https://nmaier.github.io/simpleDLNA/
     public class ContentDirectory
     {
+        private static readonly HttpClient HttpClient = new HttpClient();
         private GenericUpnpDevice Device
         {
             get;
@@ -41,13 +42,10 @@ namespace UPnPTest.Devices
             var location = "http://" + host + ":" + port + serviceLocation.controlURL;
             Trace.WriteLine(location);
 
-            XmlDocument soapEnvelopeXml = CreateSoapEnvelope();
-            HttpWebRequest webRequest = CreateWebRequest(new Uri(location), GenericUpnpDevice.ContentDirectory1 + "#Browse");
-            InsertSoapEnvelopeIntoWebRequest(soapEnvelopeXml, webRequest);
-
-            var response = webRequest.GetResponse();
-
-            var dataStream = response.GetResponseStream();
+            using var request = CreateRequest(new Uri(location), GenericUpnpDevice.ContentDirectory1 + "#Browse");
+            using var response = HttpClient.Send(request);
+            response.EnsureSuccessStatusCode();
+            using var dataStream = response.Content.ReadAsStream();
             XmlSerializer mySerializer = new XmlSerializer(typeof(Envelope));
             var browseResponse = (Envelope)mySerializer.Deserialize(dataStream);
             
@@ -56,14 +54,13 @@ namespace UPnPTest.Devices
             var didl = (roottype)mydidSerializer.Deserialize(new StringReader((string)browseResponse.Body.Response.Result));
         }
 
-        private static HttpWebRequest CreateWebRequest(Uri url, string action)
+        private static HttpRequestMessage CreateRequest(Uri url, string action)
         {
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(url);
-            webRequest.Headers.Add("SOAPACTION", "\"" + action + "\"");
-            webRequest.ContentType = "text/xml;charset=\"utf-8\"";
-            webRequest.Accept = "text/xml";
-            webRequest.Method = "POST";
-            return webRequest;
+            var request = new HttpRequestMessage(HttpMethod.Post, url);
+            request.Headers.Add("SOAPACTION", "\"" + action + "\"");
+            request.Headers.Accept.ParseAdd("text/xml");
+            request.Content = new StringContent(DJPad.Upnp.Resource.Browse, Encoding.UTF8, "text/xml");
+            return request;
         }
 
         private static XmlDocument CreateSoapEnvelope()
@@ -73,15 +70,5 @@ namespace UPnPTest.Devices
             return soapEnvelop;
         }
 
-        private static void InsertSoapEnvelopeIntoWebRequest(XmlDocument soapEnvelopeXml, HttpWebRequest webRequest)
-        {
-
-            byte[] binary = Encoding.UTF8.GetBytes(DJPad.Upnp.Resource.Browse);
-            webRequest.ContentLength = DJPad.Upnp.Resource.Browse.Length;
-            using (Stream stream = webRequest.GetRequestStream())
-            {
-               stream.Write(binary, 0, binary.Length);
-            }
-        }
     }
 }

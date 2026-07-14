@@ -18,7 +18,6 @@
     {
         private ColorPalette Palette;
         private ChildWindow playList;
-        private ChildWindow configuration;
 
         private readonly IVisualisation[] allBackgroundVisualisations =
         {

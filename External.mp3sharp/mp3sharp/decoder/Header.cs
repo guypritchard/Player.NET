@@ -31,7 +31,6 @@ namespace javazoom.jl.decoder
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Runtime.Remoting.Messaging;
     using System.Text;
 
     using ID3;

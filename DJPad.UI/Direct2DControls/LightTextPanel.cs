@@ -3,11 +3,11 @@ namespace DJPad.UI.D2D
     using System;
     using System.Drawing;
     using DJPad.Core.Utils;
-    using SharpDX.Direct2D1;
+    using Vortice.Direct2D1;
 
-    public sealed class D2DLightTextPanel : LightControl<SharpDX.Direct2D1.Bitmap>
+    public sealed class D2DLightTextPanel : LightControl<ID2D1Bitmap>
     {
-        private readonly CachingBitmapProducer<SharpDX.Direct2D1.Bitmap> bitmapCache = new CachingBitmapProducer<SharpDX.Direct2D1.Bitmap>();
+        private readonly CachingBitmapProducer<ID2D1Bitmap> bitmapCache = new CachingBitmapProducer<ID2D1Bitmap>();
 
         public D2DLightTextPanel()
         {
@@ -25,7 +25,7 @@ namespace DJPad.UI.D2D
 
             this.Image = () => this.bitmapCache.GetBitmap(Text() + Color());
         }
-        public WindowRenderTarget Target { get; set; }
+        public ID2D1HwndRenderTarget Target { get; set; }
 
         public enum Justification { Left, Right, Center }
         public Func<Color> Color { get; set; }

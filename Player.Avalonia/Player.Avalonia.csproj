@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>false</UseWindowsForms>
+    <UseWPF>false</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <AssemblyName>Player.NET</AssemblyName>
+    <ApplicationIcon>..\Resources\Resources\Player.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.18" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.18" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.18" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DJPad.Core\DJPad.Core.csproj" />
+    <ProjectReference Include="..\DJPad.UI\DJPad.UI.csproj" />
+    <ProjectReference Include="..\Resources\DJPad.Resources.csproj" />
+    <AvaloniaResource Include="..\Resources\Resources\*.png" Link="Assets\%(Filename)%(Extension)" />
+    <AvaloniaResource Include="..\Resources\Resources\*.jpg" Link="Assets\%(Filename)%(Extension)" />
+    <AvaloniaResource Include="..\Resources\Resources\Player.ico" Link="Assets\Player.ico" />
+  </ItemGroup>
+</Project>

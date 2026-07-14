@@ -1,7 +1,6 @@
 ﻿namespace Player.Net._2
 {
     using System;
-    using System.Deployment.Application;
     using System.Windows.Forms;
     using DJPad.Core.Interfaces;
     using DJPad.Core.Utils;
@@ -19,14 +18,6 @@
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
-            if (ApplicationDeployment.IsNetworkDeployed)
-            {
-                if (ApplicationDeployment.CurrentDeployment.IsFirstRun)
-                {
-                    Application.Run(new ReleaseNotes());
-                }
-            }
 
             Application.Run(new Player());
         }

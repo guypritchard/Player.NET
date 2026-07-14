@@ -1,70 +1,60 @@
-﻿namespace DJPad.Output.DirectSound
+namespace DJPad.Output.DirectSound
 {
     using System;
     using System.Threading;
-    using System.Timers;
     using DJPad.Core;
     using DJPad.Core.Interfaces;
-    using DJPad.Formats.Wave;
     using DJPad.Lib;
-    using SharpDX.DirectSound;
-    using Timer = System.Timers.Timer;
-    using WaveFormat = SharpDX.Multimedia.WaveFormat;
-    using System.Diagnostics;
+    using NAudio.Wave;
+    using NAudioWaveFormat = NAudio.Wave.WaveFormat;
 
-    public class DirectSoundOut : BaseOutput, IAudioOutput
+    public class DirectSoundOut : BaseOutput, IAudioOutput, IDisposable
     {
-        private bool Enabled { get; set; }
-        private double Interval { get; set; }
+        private const int VisualizationBufferMilliseconds = 1000;
 
-        private Thread fillThread;
-        
-        private const int MaxVolume = 10000;
-        private int currentVolume;
+        private readonly object visualisationLock = new object();
 
-        private readonly IntPtr formWindow;
+        private readonly object transitionLock = new object();
 
-        private readonly TimeSpan playbackBufferLength = TimeSpan.FromMilliseconds(1000);
+        private byte[] visualisationBuffer = new byte[0];
 
-        private byte[] visualisationBuffer;
+        private int visualisationWritePosition;
 
-        private SecondarySoundBuffer buffer;
+        private WaveOutEvent outputDevice;
 
-        private int bufferSize;
+        private PullWaveProvider waveProvider;
 
-        private ManualResetEvent waitUntilFinished;
+        private FormatInformation upstreamFormat;
 
-        private FormatInformation upstreamFormat { get; set; }
+        private bool finishedSignaled;
 
-        public long SourceOffset { get; set; }
-        public long SourceTotalLength { get; set; }
+        private int currentVolume = 100;
 
-        private NotificationPosition[] notifications;
+        private ISampleSource outgoingSource;
 
-        private bool firstWrite = true;
+        private int transitionBytesRemaining;
+
+        private int transitionBytesTotal;
+
+        private Action transitionComplete;
 
         public DirectSoundOut()
-            : this(WindowsNative.GetDesktopWindow())
+            : this(IntPtr.Zero)
         {
         }
 
         public DirectSoundOut(IntPtr playerHwnd)
         {
-            formWindow = playerHwnd;
-            this.fillThread = new Thread(this.ThreadFunc);
-            this.fillThread.SetApartmentState(ApartmentState.STA);
-            this.fillThread.IsBackground = true;
-            this.fillThread.Start();
-            this.Interval = playbackBufferLength.TotalMilliseconds / 4;
             this.State = Status.Stopped;
         }
 
-        private int NextWritePosition { get; set; }
+        public Status State { get; private set; }
 
-        public Status State
-        {
-            get; private set;
-        }
+        public long SourceOffset { get; set; }
+
+        public long SourceTotalLength { get; set; }
+
+        public TimeSpan TotalTime { get; set; }
 
         public void Play()
         {
@@ -73,233 +63,77 @@
                 throw new InvalidOperationException("No audio source defined.");
             }
 
-            this.firstWrite = true;
+            this.DisposeOutput();
             this.Init();
-            this.Enabled = true;
-            this.buffer.Play(0, PlayFlags.Looping);
             this.State = Status.Playing;
-        }
-
-        public void Stop()
-        {
-            if (this.buffer != null)
-            {
-                this.Enabled = false;
-                this.buffer.Stop();
-                this.State = Status.Stopped;
-                FireStoppedEvent(null);
-            }
-        }
-
-        public void Flush()
-        {
-            this.Reset();
-        }
-
-        public void Filler(int playedLength)
-        {
-            if (playedLength == 0)
-            {
-                return;
-            }
-
-            Sample s = SampleSource.GetSample(playedLength);
-            this.TotalTime = s.TotalTime;
-            this.SourceOffset = s.DataOffset;
-            this.SourceTotalLength = s.DataTotalLength;
-
-            if (s.IsEmpty)
-            {
-                if (this.State == Status.Playing || this.State == Status.Buffering)
-                {
-                     // Play silence into the buffer and signal as stopping...
-                     Write(new Sample(playedLength).Data);
-                     this.State = Status.Stopping;
-                }
-                else
-                {
-                    this.State = Status.Stopped;
-                    FireFinishedEvent(null);
-                }
-            }
-            else
-            {
-                this.Enabled = false;
-                Write(s.Data);
-                this.SamplesPlayed += s.DataLength;
-                this.Enabled = true;
-            }
-        }
-
-        public int GetPlayedLength()
-        {
-            if (buffer == null)
-            {
-                return 0;
-            }
-
-            int playPosition;
-            int writePosition;
-
-            buffer.GetCurrentPosition(out writePosition, out playPosition);
-
-            if (playPosition < NextWritePosition)
-            {
-                return (playPosition + this.bufferSize) - NextWritePosition;
-            }
-
-            return playPosition - NextWritePosition;
+            this.outputDevice.Play();
         }
 
         public void Play(bool blockUntilFinished)
         {
-            Play();
+            this.Play();
 
             if (blockUntilFinished)
             {
-                waitUntilFinished = new ManualResetEvent(false);
-                FinishedEvent += (source, args) => waitUntilFinished.Set();
-                waitUntilFinished.WaitOne();
+                using (var waitUntilFinished = new ManualResetEvent(false))
+                {
+                    this.FinishedEvent += (source, args) => waitUntilFinished.Set();
+                    waitUntilFinished.WaitOne();
+                }
             }
         }
 
-        private void Reset()
+        public void Stop()
         {
-            if (buffer == null) return;
-
-            this.Enabled = false;
-            this.buffer.Stop();
-            this.buffer.CurrentPosition = this.NextWritePosition;
-            Filler(bufferSize);
-            buffer.Play(0, PlayFlags.Looping);
-            this.State = Status.Playing;
-        }
-
-        public void Write(byte[] data)
-        {
-            // Don't write anything if we've stopped.
-            if (buffer == null || this.State == Status.Stopped || data.Length == 0)
+            if (this.outputDevice == null)
             {
                 return;
             }
 
-            if ((NextWritePosition + data.Length) <= bufferSize)
-            {
-                buffer.Write(data, NextWritePosition, LockFlags.None);
-                lock (this.visualisationBuffer)
-                {
-                    Array.Copy(data, 0, visualisationBuffer, NextWritePosition, data.Length);
-                }
-            }
-            else
-            {
-                int toWrite = bufferSize - NextWritePosition;
-                buffer.Write(data, 0, toWrite, NextWritePosition, LockFlags.None);
-                buffer.Write(data, toWrite, data.Length - toWrite, 0, LockFlags.None);
-
-                lock (this.visualisationBuffer)
-                {
-                    Array.Copy(data, 0, visualisationBuffer, NextWritePosition, toWrite);
-                    Array.Copy(data, toWrite, visualisationBuffer, 0, data.Length - toWrite);
-                }
-            }
-
-            NextWritePosition += data.Length;
-
-            // Now fix up the write position if we've wrapped around.
-            if (NextWritePosition >= bufferSize)
-            {
-                NextWritePosition += -bufferSize;
-            }
+            this.State = Status.Stopped;
+            this.outputDevice.Stop();
+            this.DisposeOutput();
+            this.CompleteTransition();
+            this.FireStoppedEvent(null);
         }
 
-        private void ThreadFunc(object o)
+        public bool TryTransitionTo(ISampleSource source, Action completed, int durationMilliseconds = 250)
         {
-            while (true)
+            if (source == null || this.SampleSource == null || this.State != Status.Playing)
             {
-                if (this.Enabled)
-                {
-                    FillTimer_Elapsed(null, null);
-                }
-
-                Thread.Sleep((int)this.Interval);
+                return false;
             }
+
+            var currentFormat = this.SampleSource.GetFormat();
+            var nextFormat = source.GetFormat();
+            if (currentFormat.BytesPerSample != 2 || nextFormat.BytesPerSample != 2
+                || currentFormat.SampleRate != nextFormat.SampleRate
+                || currentFormat.Channels != nextFormat.Channels)
+            {
+                return false;
+            }
+
+            this.CompleteTransition();
+            lock (this.transitionLock)
+            {
+                this.outgoingSource = this.SampleSource;
+                this.SampleSource = source;
+                var frameSize = nextFormat.BytesPerSample * nextFormat.Channels;
+                this.transitionBytesTotal = Math.Max(frameSize,
+                    nextFormat.SamplesPerSecond * durationMilliseconds / 1000 / frameSize * frameSize);
+                this.transitionBytesRemaining = this.transitionBytesTotal;
+                this.transitionComplete = completed;
+            }
+            return true;
         }
 
-
-        private void FillTimer_Elapsed(object sender, ElapsedEventArgs e)
+        public void Flush()
         {
-            if (this.State == Status.Stopped)
+            if (this.State == Status.Playing)
             {
-                return;
+                this.Stop();
+                this.Play();
             }
-
-            if (this.firstWrite)
-            {
-                this.State = Status.Buffering;
-                Filler(this.bufferSize);
-                this.firstWrite = false;
-            }
-            else
-            {
-                Filler(GetPlayedLength());
-            }
-        }
-
-        private void Init()
-        {
-            Sample s = SampleSource.GetSample(0);
-            upstreamFormat = s.Format;
-
-            var devices = DirectSound.GetDevices();
-
-            var directSound = new DirectSound();
-
-            directSound.SetCooperativeLevel(formWindow, CooperativeLevel.Priority);
-
-            // Create PrimarySoundBuffer
-            var primaryBufferDesc = new SoundBufferDescription
-                                    {
-                                        Flags = BufferFlags.PrimaryBuffer,
-                                        AlgorithmFor3D = Guid.Empty,
-                                    };
-
-            var primarySoundBuffer = new PrimarySoundBuffer(directSound, primaryBufferDesc);
-
-            // Play the PrimarySound Buffer
-            primarySoundBuffer.Play(0, PlayFlags.Looping);
-
-            // Default WaveFormat Stereo 44100 16 bit
-            WaveFormat waveFormat = upstreamFormat != null
-                ? new WaveFormat(upstreamFormat.SampleRate,
-                                 upstreamFormat.BytesPerSample * 8,
-                                 upstreamFormat.Channels)
-                : new WaveFormat();
-
-            // Create SecondarySoundBuffer
-            var secondaryBufferDesc = new SoundBufferDescription
-                                      {
-                                          BufferBytes = waveFormat.ConvertLatencyToByteSize((int)playbackBufferLength.TotalMilliseconds),
-                                          Format = waveFormat,
-                                          Flags = BufferFlags.GetCurrentPosition2
-                                                | BufferFlags.ControlPositionNotify
-                                                | BufferFlags.GlobalFocus
-                                                | BufferFlags.ControlVolume
-                                                | BufferFlags.StickyFocus
-                                      };
-
-            this.buffer = new SecondarySoundBuffer(directSound, secondaryBufferDesc) { Volume = this.Volume };
-            this.bufferSize = buffer.Capabilities.BufferBytes;
-            this.NextWritePosition = 0;
-
-            notifications = new[]
-            {
-                new NotificationPosition { Offset = bufferSize - 1, WaitHandle = new ManualResetEvent(false)},
-                new NotificationPosition { Offset = (bufferSize / 2) + 1, WaitHandle = new ManualResetEvent(false)},
-            };
-
-            this.buffer.SetNotificationPositions(notifications);
-            this.visualisationBuffer = new byte[bufferSize];
         }
 
         public FormatInformation GetFormat()
@@ -309,42 +143,42 @@
 
         public Sample GetSample(int dataRequested)
         {
-            if (buffer == null)
+            if (this.visualisationBuffer.Length == 0)
             {
                 return null;
             }
 
-            int playPosition;
-            int writePosition;
-
-            buffer.GetCurrentPosition(out writePosition, out playPosition);
-
-            var s = new Sample(dataRequested)
-                    {
-                        Format = this.GetFormat(),
-                        TotalTime = this.TotalTime,
-                        DataOffset = this.SourceOffset,
-                        DataTotalLength = this.SourceTotalLength
-                    };
-
-            lock (this.visualisationBuffer)
+            var sample = new Sample(dataRequested)
             {
-                if (playPosition + dataRequested < this.visualisationBuffer.Length)
+                Format = this.GetFormat(),
+                TotalTime = this.TotalTime,
+                DataOffset = this.SourceOffset,
+                DataTotalLength = this.SourceTotalLength
+            };
+
+            lock (this.visualisationLock)
+            {
+                var bytesToCopy = Math.Min(dataRequested, this.visualisationBuffer.Length);
+                var readPosition = this.visualisationWritePosition - bytesToCopy;
+                if (readPosition < 0)
                 {
-                    Array.Copy(this.visualisationBuffer, playPosition, s.Data, 0, dataRequested);
+                    readPosition += this.visualisationBuffer.Length;
+                }
+
+                if (readPosition + bytesToCopy <= this.visualisationBuffer.Length)
+                {
+                    Array.Copy(this.visualisationBuffer, readPosition, sample.Data, 0, bytesToCopy);
                 }
                 else
                 {
-                    var toWrite = this.visualisationBuffer.Length - playPosition;
-                    Array.Copy(this.visualisationBuffer, playPosition, s.Data, 0, toWrite);
-                    Array.Copy(this.visualisationBuffer, 0, s.Data, toWrite, dataRequested - toWrite);
+                    var firstChunk = this.visualisationBuffer.Length - readPosition;
+                    Array.Copy(this.visualisationBuffer, readPosition, sample.Data, 0, firstChunk);
+                    Array.Copy(this.visualisationBuffer, 0, sample.Data, firstChunk, bytesToCopy - firstChunk);
                 }
             }
 
-            return s;
+            return sample;
         }
-
-        public TimeSpan TotalTime { get; set; }
 
         public int Volume
         {
@@ -360,14 +194,202 @@
                     throw new ArgumentException("Invalid volume, must be 0-100.");
                 }
 
-                this.currentVolume = value * 100 - MaxVolume;
+                this.currentVolume = value;
 
-                if (this.buffer == null)
+                if (this.outputDevice != null)
                 {
-                    return;
+                    this.outputDevice.Volume = value / 100.0f;
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            this.DisposeOutput();
+            GC.SuppressFinalize(this);
+        }
+
+        private void Init()
+        {
+            var sample = this.SampleSource.GetSample(0);
+            this.upstreamFormat = sample.Format;
+            this.finishedSignaled = false;
+            this.SamplesPlayed = 0;
+            this.SourceOffset = 0;
+            this.SourceTotalLength = 0;
+            this.TotalTime = TimeSpan.Zero;
+
+            var bytesPerSecond = this.upstreamFormat.SamplesPerSecond;
+            this.visualisationBuffer = new byte[bytesPerSecond * VisualizationBufferMilliseconds / 1000];
+            this.visualisationWritePosition = 0;
+
+            this.waveProvider = new PullWaveProvider(this, this.upstreamFormat);
+            this.outputDevice = new WaveOutEvent
+            {
+                DesiredLatency = 100,
+                NumberOfBuffers = 4,
+                Volume = this.currentVolume / 100.0f
+            };
+            this.outputDevice.PlaybackStopped += this.OnPlaybackStopped;
+            this.outputDevice.Init(this.waveProvider);
+        }
+
+        private Sample ReadFromSource(int bytesRequested)
+        {
+            Action completed = null;
+            Sample sample;
+            lock (this.transitionLock)
+            {
+                sample = this.SampleSource.GetSample(bytesRequested);
+                if (this.outgoingSource != null)
+                {
+                    var outgoing = this.outgoingSource.GetSample(bytesRequested);
+                    this.MixTransition(sample, outgoing);
+                    this.transitionBytesRemaining -= sample == null ? bytesRequested : sample.DataLength;
+                    if (this.transitionBytesRemaining <= 0)
+                    {
+                        this.outgoingSource = null;
+                        completed = this.transitionComplete;
+                        this.transitionComplete = null;
+                    }
+                }
+            }
+
+            if (completed != null)
+            {
+                completed();
+            }
+
+            if (sample == null || sample.IsEmpty)
+            {
+                return sample;
+            }
+
+            this.TotalTime = sample.TotalTime;
+            this.SourceOffset = sample.DataOffset;
+            this.SourceTotalLength = sample.DataTotalLength;
+            this.SamplesPlayed += sample.DataLength;
+            this.WriteVisualisationData(sample.Data, sample.DataLength);
+
+            return sample;
+        }
+
+        private void MixTransition(Sample incoming, Sample outgoing)
+        {
+            if (incoming == null || incoming.IsEmpty)
+            {
+                return;
+            }
+
+            var outgoingLength = outgoing == null ? 0 : outgoing.DataLength;
+            for (var offset = 0; offset < incoming.DataLength - 1; offset += 2)
+            {
+                var bytesElapsed = this.transitionBytesTotal - this.transitionBytesRemaining + offset;
+                var incomingLevel = Math.Min(1.0f, bytesElapsed / (float)this.transitionBytesTotal);
+                var incomingValue = BitConverter.ToInt16(incoming.Data, offset);
+                var outgoingValue = offset < outgoingLength - 1 ? BitConverter.ToInt16(outgoing.Data, offset) : 0;
+                var mixed = (int)((outgoingValue * (1.0f - incomingLevel)) + (incomingValue * incomingLevel));
+                var encoded = BitConverter.GetBytes((short)Math.Max(short.MinValue, Math.Min(short.MaxValue, mixed)));
+                incoming.Data[offset] = encoded[0];
+                incoming.Data[offset + 1] = encoded[1];
+            }
+        }
+
+        private void CompleteTransition()
+        {
+            Action completed;
+            lock (this.transitionLock)
+            {
+                this.outgoingSource = null;
+                this.transitionBytesRemaining = 0;
+                completed = this.transitionComplete;
+                this.transitionComplete = null;
+            }
+            if (completed != null)
+            {
+                completed();
+            }
+        }
+
+        private void WriteVisualisationData(byte[] data, int length)
+        {
+            if (this.visualisationBuffer.Length == 0 || length == 0)
+            {
+                return;
+            }
+
+            lock (this.visualisationLock)
+            {
+                var sourceOffset = Math.Max(0, length - this.visualisationBuffer.Length);
+                var remaining = length - sourceOffset;
+
+                while (remaining > 0)
+                {
+                    var writable = Math.Min(remaining, this.visualisationBuffer.Length - this.visualisationWritePosition);
+                    Array.Copy(data, sourceOffset, this.visualisationBuffer, this.visualisationWritePosition, writable);
+                    this.visualisationWritePosition = (this.visualisationWritePosition + writable) % this.visualisationBuffer.Length;
+                    sourceOffset += writable;
+                    remaining -= writable;
+                }
+            }
+        }
+
+        private void SignalFinished()
+        {
+            if (this.finishedSignaled || this.State == Status.Stopped)
+            {
+                return;
+            }
+
+            this.finishedSignaled = true;
+            this.State = Status.Stopped;
+            this.FireFinishedEvent(null);
+        }
+
+        private void OnPlaybackStopped(object sender, StoppedEventArgs args)
+        {
+            if (ReferenceEquals(sender, this.outputDevice))
+            {
+                this.SignalFinished();
+            }
+        }
+
+        private void DisposeOutput()
+        {
+            if (this.outputDevice != null)
+            {
+                var device = this.outputDevice;
+                this.outputDevice = null;
+                device.PlaybackStopped -= this.OnPlaybackStopped;
+                device.Dispose();
+            }
+
+            this.waveProvider = null;
+        }
+
+        private sealed class PullWaveProvider : IWaveProvider
+        {
+            private readonly DirectSoundOut owner;
+
+            public PullWaveProvider(DirectSoundOut owner, FormatInformation format)
+            {
+                this.owner = owner;
+                this.WaveFormat = new NAudioWaveFormat(format.SampleRate, format.BytesPerSample * 8, format.Channels);
+            }
+
+            public NAudioWaveFormat WaveFormat { get; private set; }
+
+            public int Read(byte[] buffer, int offset, int count)
+            {
+                var sample = this.owner.ReadFromSource(count);
+                if (sample == null || sample.IsEmpty)
+                {
+                    this.owner.SignalFinished();
+                    return 0;
                 }
 
-                this.buffer.Volume = this.currentVolume;
+                Array.Copy(sample.Data, 0, buffer, offset, sample.DataLength);
+                return sample.DataLength;
             }
         }
     }

@@ -13,6 +13,8 @@ namespace Player.Net._2.UserInterface
     using System.IO;
     using DJPad.UI.D2D;
     using CircularOscilloscope = Player.Net._2.UserInterface.Vis.CircularOscilloscope;
+    using Vortice.Direct2D1;
+    using WindowState = DJPad.UI.WindowState;
 
     public class NormalUi : BaseUi
     {
@@ -25,7 +27,7 @@ namespace Player.Net._2.UserInterface
         
         private readonly CircularOscilloscope OverlayVisualisation = new CircularOscilloscope();
 
-        public override IList<LightControl<SharpDX.Direct2D1.Bitmap>> GenerateUI(PlayerState state, WindowState window)
+        public override IList<LightControl<ID2D1Bitmap>> GenerateUI(PlayerState state, WindowState window)
         {
             this.Player = state;
             var d2dWindow = window as D2DWindowState;
@@ -51,7 +53,7 @@ namespace Player.Net._2.UserInterface
             state.PlaylistChanged += () => window.Repaint();
             this.OverlayVisualisation.SampleSource = Player.Audio;
 
-            return new List<LightControl<SharpDX.Direct2D1.Bitmap>>
+            return new List<LightControl<ID2D1Bitmap>>
                                   {
                                       new ImageCachingLightControl
                                       {

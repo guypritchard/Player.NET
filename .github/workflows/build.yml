@@ -1,0 +1,198 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v[0-9]*.[0-9]*.[0-9]*'
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: '1'
+
+jobs:
+  build:
+    name: Build, test, and package
+    runs-on: windows-latest
+    outputs:
+      package_name: ${{ steps.package.outputs.package_name }}
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v5.4.0
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v4.7.0
+        with:
+          versionSpec: 6.8.x
+
+      - name: Determine semantic version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v4.7.0
+        with:
+          configFilePath: GitVersion.yml
+          updateAssemblyInfo: false
+          updateProjectFiles: false
+
+      - name: Validate release tag
+        if: github.ref_type == 'tag'
+        shell: pwsh
+        env:
+          SEMVER: ${{ steps.gitversion.outputs.semVer }}
+        run: |
+          if ($env:GITHUB_REF_NAME -notmatch '^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$') {
+            throw 'Release tags must have the form vMAJOR.MINOR.PATCH.'
+          }
+          $tagVersion = $env:GITHUB_REF_NAME.Substring(1)
+          if ($tagVersion -ne $env:SEMVER) {
+            throw "Tag version '$tagVersion' does not match GitVersion SemVer '$env:SEMVER'."
+          }
+          git merge-base --is-ancestor $env:GITHUB_SHA refs/remotes/origin/master
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Release tags must point to a commit contained in origin/master.'
+          }
+
+      - name: Restore
+        shell: pwsh
+        run: dotnet restore DJPad.sln --runtime win-x64
+
+      - name: Build
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.gitversion.outputs.semVer }}
+          ASSEMBLY_VERSION: ${{ steps.gitversion.outputs.assemblySemVer }}
+          FILE_VERSION: ${{ steps.gitversion.outputs.assemblySemFileVer }}
+          INFORMATIONAL_VERSION: ${{ steps.gitversion.outputs.informationalVersion }}
+        run: |
+          dotnet build DJPad.sln `
+            --configuration Release `
+            --no-restore `
+            -nodeReuse:false `
+            -warnaserror `
+            -p:ContinuousIntegrationBuild=true `
+            -p:Version="$env:VERSION" `
+            -p:AssemblyVersion="$env:ASSEMBLY_VERSION" `
+            -p:FileVersion="$env:FILE_VERSION" `
+            -p:InformationalVersion="$env:INFORMATIONAL_VERSION"
+
+      - name: Test
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.gitversion.outputs.semVer }}
+          ASSEMBLY_VERSION: ${{ steps.gitversion.outputs.assemblySemVer }}
+          FILE_VERSION: ${{ steps.gitversion.outputs.assemblySemFileVer }}
+          INFORMATIONAL_VERSION: ${{ steps.gitversion.outputs.informationalVersion }}
+        run: |
+          # The legacy solution maps DJPad.Core to x86. Build the test graph directly
+          # so the test host receives AnyCPU dependencies in its own output folder.
+          dotnet build DJPad.Tests/DJPad.Tests.csproj `
+            --configuration Release `
+            --no-restore `
+            -nodeReuse:false `
+            -warnaserror `
+            -p:ContinuousIntegrationBuild=true `
+            -p:Version="$env:VERSION" `
+            -p:AssemblyVersion="$env:ASSEMBLY_VERSION" `
+            -p:FileVersion="$env:FILE_VERSION" `
+            -p:InformationalVersion="$env:INFORMATIONAL_VERSION"
+
+          dotnet test DJPad.Tests/DJPad.Tests.csproj `
+            --configuration Release `
+            --no-build `
+            --no-restore `
+            -nodeReuse:false `
+            -warnaserror `
+            --filter "TestCategory!=Integration"
+
+      - name: Publish versioned player
+        id: package
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.gitversion.outputs.semVer }}
+          ASSEMBLY_VERSION: ${{ steps.gitversion.outputs.assemblySemVer }}
+          FILE_VERSION: ${{ steps.gitversion.outputs.assemblySemFileVer }}
+          INFORMATIONAL_VERSION: ${{ steps.gitversion.outputs.informationalVersion }}
+        run: |
+          $packageName = "Player.NET-$env:VERSION-win-x64"
+          $publishDirectory = Join-Path $env:RUNNER_TEMP $packageName
+          $artifactDirectory = Join-Path $env:GITHUB_WORKSPACE 'artifacts'
+          $zipPath = Join-Path $artifactDirectory "$packageName.zip"
+          New-Item -ItemType Directory -Force -Path $publishDirectory | Out-Null
+          New-Item -ItemType Directory -Force -Path $artifactDirectory | Out-Null
+
+          dotnet publish Player.Avalonia/Player.Avalonia.csproj `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained true `
+            --no-restore `
+            --output $publishDirectory `
+            -nodeReuse:false `
+            -warnaserror `
+            -p:ContinuousIntegrationBuild=true `
+            -p:PublishSingleFile=false `
+            -p:PublishTrimmed=false `
+            -p:PublishReadyToRun=false `
+            -p:Version="$env:VERSION" `
+            -p:AssemblyVersion="$env:ASSEMBLY_VERSION" `
+            -p:FileVersion="$env:FILE_VERSION" `
+            -p:InformationalVersion="$env:INFORMATIONAL_VERSION"
+
+          Compress-Archive -Path (Join-Path $publishDirectory '*') -DestinationPath $zipPath -CompressionLevel Optimal
+          "package_name=$packageName" >> $env:GITHUB_OUTPUT
+          "zip_path=$zipPath" >> $env:GITHUB_OUTPUT
+
+      - name: Upload player artifact
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: ${{ steps.package.outputs.package_name }}
+          path: ${{ steps.package.outputs.zip_path }}
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+  release:
+    name: Publish GitHub release
+    if: github.ref_type == 'tag'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download packaged player
+        uses: actions/download-artifact@v8.0.1
+        with:
+          name: ${{ needs.build.outputs.package_name }}
+          path: release
+
+      - name: Create GitHub release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PACKAGE_NAME: ${{ needs.build.outputs.package_name }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "release/$PACKAGE_NAME.zip#$PACKAGE_NAME.zip" \
+            --verify-tag \
+            --generate-notes \
+            --title "$GITHUB_REF_NAME"

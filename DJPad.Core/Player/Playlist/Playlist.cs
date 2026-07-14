@@ -19,8 +19,6 @@
 
         private bool internalRandom;
 
-        private bool useRandom;
-
         private List<IPlaylistItem> RandomItems;
 
         private readonly Corpus<IPlaylistItem, IMetadata> corpus = new Corpus<IPlaylistItem, IMetadata>();
@@ -105,11 +103,16 @@
 
         public List<IPlaylistItem> Items { get; private set; }
 
+        public List<IPlaylistItem> PlaybackItems
+        {
+            get { return this.Random ? this.RandomItems : this.Items; }
+        }
+
         public IPlaylistItem Next
         {
             get
             {
-                if (this.useRandom)
+                if (this.Random)
                 {
                     return this.RandomItems.ElementAtOrDefault(this.nextIndex);
                 }
@@ -122,7 +125,7 @@
         {
             get
             {
-                if (this.useRandom)
+                if (this.Random)
                 {
                     return this.RandomItems.ElementAtOrDefault(this.previousIndex);
                 }
@@ -197,7 +200,6 @@
         
         public void MoveNext()
         {
-            this.useRandom = this.Random;
             if (this.Random)
             {
                 this.currentIndex = this.RandomItems.IndexOf(this.Current);
@@ -218,7 +220,6 @@
 
         public void MovePrevious()
         {
-            this.useRandom = this.Random;
             if (this.Random)
             {
                 this.currentIndex = this.RandomItems.IndexOf(this.Current);
@@ -256,6 +257,7 @@
 
         public void Save(string location, string name)
         {
+            Directory.CreateDirectory(location);
             var fileName = Path.Combine(location, name);
             using (var fs = File.Open(fileName, FileMode.Create))
             using (var streamWrite = new StreamWriter(fs))

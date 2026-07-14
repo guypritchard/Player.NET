@@ -4,10 +4,7 @@
     using System.Diagnostics;
     using System.Drawing;
     using System.Drawing.Drawing2D;
-    using System.IO;
     using System.Linq;
-
-    using System.Collections.Generic;
     using DJPad.Core;
     using DJPad.Core.Interfaces;
     using DJPad.Core.Utils;
@@ -19,21 +16,11 @@
         private TimeSpan Total;
         private Sample sampleCopy;
         private Bitmap privateImage;
-        public int samplesDrawn;
-
-        private Cache<double> CosCache = new Cache<double>(Math.Cos);
-        private Cache<double> SinCache = new Cache<double>(Math.Sin);
-
         private ColorPalette defaultColorPalette = new ColorPalette(new[] { Color.DarkOrange, Color.LightSkyBlue, Color.SlateGray });
 
         public ISampleSource SampleSource { get; set; }
 
         #region Public Methods and Operators
-
-        public FormatInformation GetFormat()
-        {
-            return this.SampleSource.GetFormat();
-        }
 
         public void Draw(Graphics g, Color backgroundColor, int width, int height, bool playing = true, TimeSpan? duration = null, ColorPalette palette = null)
         {
@@ -51,7 +38,10 @@
                 this.Total = duration.Value;
             }
 
-            g.FillRectangle(new SolidBrush(backgroundColor), new Rectangle(0, 0, width, height));
+            using (var background = new SolidBrush(backgroundColor))
+            {
+                g.FillRectangle(background, new Rectangle(0, 0, width, height));
+            }
 
             if (this.SampleSource == null)
             {
@@ -67,121 +57,53 @@
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-            PointF[] leftgraph;
-            PointF[] rightgraph;
-            PointF[] bothgraph;
-
+            var lowBand = new float[MinimumSamplesToDraw];
+            var midBand = new float[MinimumSamplesToDraw];
+            var highBand = new float[MinimumSamplesToDraw];
             if (this.sampleCopy != null && this.sampleCopy.DataLength > MinimumSamplesToDraw * 2)
             {
                 this.Progress = sampleCopy.PresentationTime;
-
-                var br = new BinaryReader(new MemoryStream(this.sampleCopy.Data));
-                br.BaseStream.Position = this.samplesDrawn;
-
-                leftgraph = new PointF[MinimumSamplesToDraw];
-                rightgraph = new PointF[MinimumSamplesToDraw];
-                bothgraph = new PointF[MinimumSamplesToDraw];
-
-                for (int i = 0; i < MinimumSamplesToDraw; i++)
-                {
-                    try
-                    {
-                        short leftSample = br.ReadInt16();
-                        short rightSample = br.ReadInt16();
-
-                        leftgraph[i].X = (i * width) / MinimumSamplesToDraw;
-                        leftgraph[i].Y = this.ScaleSample(leftSample, height, width);
-
-                        rightgraph[i].X = leftgraph[i].X;
-                        rightgraph[i].Y = this.ScaleSample(rightSample, height, width);
-
-                        bothgraph[i].X = leftgraph[i].X;
-                        bothgraph[i].Y = this.ScaleSample((short)((rightSample + leftSample) / 4), height, width);
-
-                        // We already read 4 bytes at this point we just need to skip ahead to the next point to read a sample.
-                        int samplesToSkip = (this.sampleCopy.DataLength / (MinimumSamplesToDraw * 2)) - 4;
-
-                        // Make sure we're always on an even number boundary to be sure we read our left/right samples correctly.
-                        samplesToSkip = (samplesToSkip % 2) == 0 ? samplesToSkip : samplesToSkip - 1;
-
-                        br.BaseStream.Position += samplesToSkip > 0 ? samplesToSkip : 0;
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.WriteLine(e);
-                    }
-                }
-            }
-            else
-            {
-                leftgraph = new[] { new PointF { Y = height / 2.0f, X = 0 }, new PointF { Y = height / 2.0f, X = width } };
-                rightgraph = leftgraph;
-                bothgraph = leftgraph;
+                var format = this.sampleCopy.Format ?? this.SampleSource.GetFormat();
+                this.SplitFrequencyBands(this.sampleCopy, format, lowBand, midBand, highBand);
             }
 
-            double percentage = this.Progress.TotalMilliseconds / this.Total.TotalMilliseconds;
-            var completeGraphLength = (int)(bothgraph.Length * percentage);
+            var percentage = this.Total == TimeSpan.Zero ? 0 : this.Progress.TotalMilliseconds / this.Total.TotalMilliseconds;
+            var completeGraphLength = Math.Clamp((int)(MinimumSamplesToDraw * percentage), 2, MinimumSamplesToDraw);
 
             try
             {
-                var circleB = new List<PointF>();
-                var circleL = new List<PointF>();
-                var circleR = new List<PointF>();
+                var lowWave = new PointF[MinimumSamplesToDraw];
+                var midWave = new PointF[MinimumSamplesToDraw];
+                var highWave = new PointF[MinimumSamplesToDraw];
+                var size = Math.Min(width, height);
+                var centerX = width / 2.0f;
+                var centerY = height / 2.0f;
 
-                int j = 0;
-                const float scale = 0.7f;
-                float diameter = width/2.0f;
-
-                // This looks weird, but its the only way I could get the countdown to appear clockwise.
-                for (double i = 3 * Math.PI; i > Math.PI; i -= 0.021)
+                for (var point = 0; point < MinimumSamplesToDraw; point++)
                 {
-                    if (leftgraph.Length <= 2 && rightgraph.Length <= 2)
-                    {
-                        circleL.Add(new PointF(diameter + (float)SinCache[i], diameter + (float)CosCache[i]));
-                        circleR.Add(new PointF(diameter + (float)SinCache[i], diameter + (float)CosCache[i]));
-                        circleB.Add(new PointF(diameter + (float)SinCache[i], diameter + (float)CosCache[i]));
-                    }
-                    else
-                    {
-                        // This looks weird, this is to ensure the circles appear within the window. 
-                        circleL.Add(new PointF(diameter + (float)SinCache[i] * leftgraph[j].Y * scale,
-                                               diameter + (float)CosCache[i] * leftgraph[j].Y * scale));
-                        circleR.Add(new PointF(diameter + (float)SinCache[i] * rightgraph[j].Y * scale,
-                                               diameter + (float)CosCache[i] * rightgraph[j].Y * scale));
-                        circleB.Add(new PointF(diameter + (float)SinCache[i] * bothgraph[j].Y * scale,
-                                               diameter + (float)CosCache[i] * bothgraph[j].Y * scale));
-                        j++;
-                    }
+                    var angle = (3 * Math.PI) - (point * 2 * Math.PI / (MinimumSamplesToDraw - 1));
+                    lowWave[point] = this.RadialPoint(centerX, centerY, angle,
+                        (size * 0.29f) + (lowBand[point] * size * 0.16f));
+                    midWave[point] = this.RadialPoint(centerX, centerY, angle,
+                        (size * 0.36f) + (midBand[point] * size * 0.10f));
+                    highWave[point] = this.RadialPoint(centerX, centerY, angle,
+                        (size * 0.43f) + (highBand[point] * size * 0.025f));
                 }
 
-                g.DrawLines(new Pen(palette.Saturated.MakeTransparent(0.9f)), circleL.ToArray());
-                g.DrawLines(new Pen(palette.Saturated.MakeTransparent(0.9f)), circleR.ToArray());
-
-                // Countdown
-                g.DrawLines(new Pen(palette.Brightest.MakeTransparent(0.8f), 8.0f), circleB.Take(completeGraphLength >= 2 ? completeGraphLength : 2).ToArray());
-
-                if (circleB.Skip(completeGraphLength >= 2 ? completeGraphLength : 0).Count() > 2)
-                {
-                    g.DrawLines(new Pen(palette.Darkest.MakeTransparent(0.8f), 8.0f), circleB.Skip(completeGraphLength >= 2 ? completeGraphLength : 0).ToArray());
-                }
+                using var lowPen = new Pen(palette.Darkest.MakeTransparent(0.85f), 2);
+                using var midPen = new Pen(palette.Saturated.MakeTransparent(0.9f), 2);
+                using var playedPen = new Pen(palette.Brightest.MakeTransparent(0.8f), 5);
+                using var remainingPen = new Pen(palette.Saturated.MakeTransparent(0.75f), 5);
+                g.DrawLines(lowPen, lowWave);
+                g.DrawLines(midPen, midWave);
+                g.DrawLines(playedPen, highWave.Take(completeGraphLength).ToArray());
+                g.DrawLines(remainingPen, highWave.Skip(completeGraphLength - 1).ToArray());
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
             }
         }
-
-        //public Bitmap Draw(Size size, Color backgroundColor, bool playing = true, TimeSpan? duration = null, ColorPalette palette = null)
-        //{
-        //    if (this.privateImage == null || this.privateImage.Height != size.Height || this.privateImage.Width != size.Width)
-        //    {
-        //        this.privateImage = new Bitmap(size.Width, size.Height, PixelFormat.Format32bppPArgb);
-        //    }
-
-        //    this.Draw(Graphics.FromImage(this.privateImage), backgroundColor, size.Width, size.Height, playing, duration, palette);
-
-        //    return this.privateImage;
-        //}
 
         public Bitmap Draw(Size size, Color backgroundColor, bool playing = true, TimeSpan? duration = null, ColorPalette palette = null)
         {
@@ -190,36 +112,8 @@
                 this.privateImage = new Bitmap(size.Width, size.Height, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
             }
 
-            //var shrink = new Bitmap(size.Width, size.Height, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-            //using (var g = Graphics.FromImage(shrink))
-            //{
-            //    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Low; // or NearestNeighbour
-            //    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
-            //    g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
-            //    g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
-
-            //    //ColorMatrix cm = new ColorMatrix();
-            //    //cm.Matrix33 = 0.85f;
-            //    //ImageAttributes ia = new ImageAttributes();
-            //    //ia.SetColorMatrix(cm);
-
-            //    g.CompositingMode = CompositingMode.SourceOver;
-
-            //    g.DrawImage(this.privateImage, new Rectangle(10, 10, size.Width - 20, size.Height - 20), 0, 0, shrink.Height, shrink.Width, GraphicsUnit.Pixel);
-
-                this.Draw(
-                    Graphics.FromImage(this.privateImage),
-                    backgroundColor,
-                    size.Width,
-                    size.Height,
-                    playing,
-                    duration,
-                    palette);
-
-            //    g.DrawImageUnscaled(this.privateImage, 0, 0);
-            //}
-
-            //Graphics.FromImage(this.privateImage).DrawImage(shrink, 0, 0);
+            using var graphics = Graphics.FromImage(this.privateImage);
+            this.Draw(graphics, backgroundColor, size.Width, size.Height, playing, duration, palette);
 
             return this.privateImage;
         }
@@ -228,22 +122,56 @@
 
         #region Methods
 
-        private float ScaleSample(short sample, int height, int width)
+        private void SplitFrequencyBands(Sample sample, FormatInformation format, float[] low, float[] mid, float[] high)
         {
-            return ((sample * height * 0.4f) / short.MaxValue) + (height / 2);
-        }
+            var channels = Math.Max(1, format.Channels);
+            var frameSize = format.BytesPerSample * channels;
+            var frameCount = sample.DataLength / frameSize;
+            var lowPassAlpha = 1.0f - (float)Math.Exp(-2 * Math.PI * 250 / format.SampleRate);
+            var midPassAlpha = 1.0f - (float)Math.Exp(-2 * Math.PI * 2000 / format.SampleRate);
+            var lowPass = 0.0f;
+            var midPass = 0.0f;
+            var lowFrames = new float[frameCount];
+            var midFrames = new float[frameCount];
+            var highFrames = new float[frameCount];
 
-        private List<PointF> Circle(int size)
-        {
-            var circle = new List<PointF>();
-            for (double i = 0; i < 2 * Math.PI; i += 0.021)
+            for (var frame = 0; frame < frameCount; frame++)
             {
-                circle.Add(new PointF(size + (float)Math.Sin(i) * size, (float)size + (float)Math.Cos(i) * size));
+                var offset = frame * frameSize;
+                var left = BitConverter.ToInt16(sample.Data, offset);
+                var right = channels > 1 ? BitConverter.ToInt16(sample.Data, offset + format.BytesPerSample) : left;
+                var value = ((left + right) / 2.0f) / short.MaxValue;
+                lowPass += lowPassAlpha * (value - lowPass);
+                midPass += midPassAlpha * (value - midPass);
+                lowFrames[frame] = lowPass;
+                midFrames[frame] = midPass - lowPass;
+                highFrames[frame] = value - midPass;
             }
 
-            circle.Add(circle.First());
+            for (var point = 0; point < low.Length; point++)
+            {
+                var firstFrame = point * frameCount / low.Length;
+                var lastFrame = Math.Max(firstFrame + 1, (point + 1) * frameCount / low.Length);
+                var lowTotal = 0.0f;
+                var midTotal = 0.0f;
+                var highTotal = 0.0f;
+                for (var frame = firstFrame; frame < lastFrame; frame++)
+                {
+                    lowTotal += lowFrames[frame];
+                    midTotal += midFrames[frame];
+                    highTotal += highFrames[frame];
+                }
 
-            return circle;
+                var count = lastFrame - firstFrame;
+                low[point] = Math.Clamp(lowTotal / count * 3.0f, -1, 1);
+                mid[point] = Math.Clamp(midTotal / count * 2.0f, -1, 1);
+                high[point] = Math.Clamp(highTotal / count * 0.8f, -1, 1);
+            }
+        }
+
+        private PointF RadialPoint(float centerX, float centerY, double angle, float radius)
+        {
+            return new PointF(centerX + ((float)Math.Sin(angle) * radius), centerY + ((float)Math.Cos(angle) * radius));
         }
 
         #endregion

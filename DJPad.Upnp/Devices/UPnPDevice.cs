@@ -2,6 +2,7 @@
 {
     using System.Diagnostics;
     using System.Net;
+    using System.Net.Http;
     using System.Xml;
     using System.Xml.Serialization;
     using UPnPTest.Message;
@@ -9,6 +10,7 @@
 
     public class GenericUpnpDevice
     {
+        private static readonly HttpClient HttpClient = new HttpClient();
         public const string All = "ssdp:all";
         public const string Root = "upnp:rootdevice";
         public const string Basic1 = "urn:schemas-upnp-org:device:Basic:1";
@@ -98,11 +100,9 @@
                 if (!string.IsNullOrEmpty(serviceName))
                 {
                     var serializer = new XmlSerializer(typeof(DeviceDescription));
-                    var request = (HttpWebRequest)WebRequest.Create(location);
-
-                    using (var response = (HttpWebResponse)request.GetResponse())
+                    using (var responseStream = HttpClient.GetStreamAsync(location).GetAwaiter().GetResult())
                     {
-                        device = (DeviceDescription)serializer.Deserialize(response.GetResponseStream());
+                        device = (DeviceDescription)serializer.Deserialize(responseStream);
                         Trace.WriteLine(device.Device.friendlyName + " found");
                     }
                 }
@@ -111,7 +111,7 @@
             {
                 Trace.WriteLine(xmlException);
             }
-            catch (WebException webException)
+            catch (HttpRequestException webException)
             {
                 Trace.WriteLine(webException);
             }

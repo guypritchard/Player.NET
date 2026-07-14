@@ -11,10 +11,6 @@
     {
         float[] maxValues; 
 
-        public FftBars() : base(0, false)
-        {
-        }
-
         //http://stackoverflow.com/questions/20408388/how-to-filter-fft-data-for-audio-visualisation
         protected override void DrawChannel(Graphics g, int width, int height, Sample.Channel channel, int zoom = 1, ColorPalette palette = null)
         {
@@ -30,27 +26,6 @@
             Array.Resize(ref spect, spect.Length/2);
 
             g.FillRectangle(new SolidBrush(Color.Transparent), 0, 0, width, height);
-            //var bars = new RectangleF[25];
-
-            
-            //for (int i = 0; i < spect.Length; i += 8)
-            //{
-            //    if (i * 2 < width)
-            //    {
-            //        var value = (spect[i] + spect[i + 1] + spect[i + 2] + spect[i + 3] + spect[i + 4] + spect[i + 5] + spect[i + 6] + spect[i + 7])/32;
-            //        if (value <= 0)
-            //        {
-            //            continue;
-            //        }
-
-            //        bars[i / 8] = new RectangleF(
-            //            (i * 2) - (i >= 0 ? 0 : 1) , 
-            //            Math.Max(0, height - value), 
-            //            15,
-            //            value);
-            //    }
-            //}
-
             var bars = new RectangleF[50];
 
 
@@ -70,7 +45,7 @@
                     }
 
                     bars[i / 4] = new RectangleF(
-                        (i * 2) - (i >= 0 ? 0 : 1),
+                        i * 2,
                         Math.Max(0, height - value),
                         7,
                         value);

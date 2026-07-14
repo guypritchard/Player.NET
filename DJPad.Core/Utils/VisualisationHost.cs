@@ -1,6 +1,7 @@
 ﻿namespace DJPad.Core.Utils
 {
     using System;
+    using System.ComponentModel;
     using System.Drawing;
     using System.Windows.Forms;
     using DJPad.Core.Interfaces;
@@ -9,6 +10,7 @@
     {
         private readonly IVisualisation visualisationSource;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool DisplayFPS { get; set; }
 
         private DateTime LastPaint { get; set; }
