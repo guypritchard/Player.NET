@@ -2,9 +2,6 @@
 {
     using System;
     using System.Windows.Forms;
-    using DJPad.Core.Interfaces;
-    using DJPad.Core.Utils;
-    using DJPad.Db;
 
     static class Program
     {
@@ -14,8 +11,6 @@
         [STAThread]
         static void Main()
         {
-            IoCContainer.AddMapping<IMediaCorpus, SqlCeMediaCorpus>(true);
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DJPad.Core\DJPad.Core.csproj" />
-    <ProjectReference Include="..\DJPad.Db\DJPad.Db.csproj" />
     <ProjectReference Include="..\DJPad.Interfaces\DJPad.Interfaces.csproj" />
     <ProjectReference Include="..\DJPad.UI\DJPad.UI.csproj" />
     <ProjectReference Include="..\Resources\DJPad.Resources.csproj" />
