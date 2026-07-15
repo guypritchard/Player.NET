@@ -12,8 +12,6 @@
     using UserInterface;
     using Resources;
     using System.Drawing;
-    using DJPad.Db;
-    using System.Diagnostics;
 
     public class Player : GdiPlusChromelessForm
     {
@@ -25,7 +23,7 @@
         public Player() : base(false)
         {
             this.Icon = Resources.Player;
-            this.playerState = new PlayerState(IoCContainer.Get<IMediaCorpus>());
+            this.playerState = new PlayerState();
 
             this.AutoScaleMode = AutoScaleMode.Dpi;
 
