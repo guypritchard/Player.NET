@@ -55,17 +55,12 @@ dotnet test DJPad.Tests/DJPad.Tests.csproj --configuration Release --filter "Tes
 
 ## Releases
 
-GitVersion calculates semantic versions from the full Git history. Every CI run publishes a versioned, self-contained single-file `win-x64` executable. Pushing a stable tag such as `v0.1.0` also creates a GitHub release containing:
+GitVersion calculates semantic versions from the full Git history. Every CI run publishes a versioned, self-contained single-file `win-x64` executable. Each successful build on `master` also updates a rolling draft release containing:
 
 ```text
 Player.NET-0.1.0-win-x64.exe
 ```
 
-Release tags must use `vMAJOR.MINOR.PATCH` and point to a commit contained in `master`.
+Review the draft on the GitHub Releases page and select **Publish release** when it is ready. Publishing creates the `vMAJOR.MINOR.PATCH` tag. Draft versions increment by a patch by default.
 
-```powershell
-git tag -a v0.1.0 -m "Player.NET v0.1.0"
-git push origin v0.1.0
-```
-
-Commit messages can direct the next GitVersion increment with `+semver: major`, `+semver: minor`, `+semver: patch`, or `+semver: none`.
+For a larger increment, apply a `release: minor` or `release: major` label and include the matching `+semver: minor` or `+semver: major` directive in the pull request title. The label versions the draft while the directive versions the executable. `+semver: patch` and `+semver: none` are also supported by GitVersion.

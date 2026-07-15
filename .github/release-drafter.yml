@@ -1,0 +1,44 @@
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+version-template: '$MAJOR.$MINOR.$PATCH'
+change-template: '- $TITLE (#$NUMBER) @$AUTHOR'
+no-changes-template: '- No user-facing changes'
+
+categories:
+  - title: 'Features'
+    labels:
+      - enhancement
+      - feature
+  - title: 'Fixes'
+    labels:
+      - bug
+      - fix
+  - title: 'Dependencies'
+    labels:
+      - dependencies
+  - title: 'Maintenance'
+    labels:
+      - chore
+      - maintenance
+
+exclude-labels:
+  - skip-changelog
+
+version-resolver:
+  major:
+    labels:
+      - 'release: major'
+  minor:
+    labels:
+      - 'release: minor'
+  patch:
+    labels:
+      - 'release: patch'
+  default: patch
+
+template: |
+  ## What's Changed
+
+  $CHANGES
+
+  **Full Changelog**: $PREVIOUS_TAG...v$RESOLVED_VERSION
