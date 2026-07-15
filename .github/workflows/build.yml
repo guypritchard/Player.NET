@@ -180,37 +180,82 @@ jobs:
     name: Update draft release
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     permissions:
       contents: write
       pull-requests: read
 
     steps:
-      - name: Download packaged player
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: ${{ needs.build.outputs.package_name }}
-          path: release
-
       - name: Update release draft
         id: release-drafter
         uses: release-drafter/release-drafter@4d75298e00d9e34c483e5ff8c68d0ea1c1940c1e # v7.5.1
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
+      - name: Checkout release source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Publish draft executable
+        id: release-package
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ steps.release-drafter.outputs.tag_name }}
+        run: |
+          $version = $env:RELEASE_TAG -replace '^v', ''
+          if ($version -notmatch '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$') {
+            throw "Draft tag '$env:RELEASE_TAG' is not a stable semantic version."
+          }
+
+          $assetName = "Player.NET-$version-win-x64.exe"
+          $publishDirectory = Join-Path $env:RUNNER_TEMP "Player.NET-$version-win-x64"
+          $assetPath = Join-Path $env:RUNNER_TEMP $assetName
+
+          dotnet restore Player.Avalonia/Player.Avalonia.csproj --runtime win-x64
+          dotnet publish Player.Avalonia/Player.Avalonia.csproj `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained true `
+            --no-restore `
+            --output $publishDirectory `
+            -nodeReuse:false `
+            -warnaserror `
+            -p:ContinuousIntegrationBuild=true `
+            -p:PublishSingleFile=true `
+            -p:IncludeAllContentForSelfExtract=true `
+            -p:EnableCompressionInSingleFile=true `
+            -p:PublishTrimmed=false `
+            -p:PublishReadyToRun=false `
+            -p:DebugType=None `
+            -p:DebugSymbols=false `
+            -p:Version="$version" `
+            -p:AssemblyVersion="$version.0" `
+            -p:FileVersion="$version.0" `
+            -p:InformationalVersion="$version+$env:GITHUB_SHA"
+
+          Copy-Item -LiteralPath (Join-Path $publishDirectory 'Player.NET.exe') -Destination $assetPath
+          "asset_name=$assetName" >> $env:GITHUB_OUTPUT
+          "asset_path=$assetPath" >> $env:GITHUB_OUTPUT
+
       - name: Replace draft executable
-        shell: bash
+        shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           RELEASE_ID: ${{ steps.release-drafter.outputs.id }}
           RELEASE_TAG: ${{ steps.release-drafter.outputs.tag_name }}
-          ASSET_NAME: ${{ needs.build.outputs.package_name }}.exe
+          ASSET_NAME: ${{ steps.release-package.outputs.asset_name }}
+          ASSET_PATH: ${{ steps.release-package.outputs.asset_path }}
         run: |
-          gh api "repos/$GH_REPO/releases/$RELEASE_ID/assets" --jq '.[].id' | while read -r asset_id; do
-            if [[ -n "$asset_id" ]]; then
-              gh api --method DELETE "repos/$GH_REPO/releases/assets/$asset_id"
-            fi
-          done
+          $assetIds = gh api "repos/$env:GH_REPO/releases/$env:RELEASE_ID/assets" --jq '.[].id'
+          foreach ($assetId in $assetIds) {
+            gh api --method DELETE "repos/$env:GH_REPO/releases/assets/$assetId"
+          }
 
-          gh release upload "$RELEASE_TAG" "release/$ASSET_NAME#$ASSET_NAME"
+          gh release upload $env:RELEASE_TAG "$env:ASSET_PATH#$env:ASSET_NAME"

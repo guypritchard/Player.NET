@@ -5,36 +5,39 @@ change-template: '- $TITLE (#$NUMBER) @$AUTHOR'
 no-changes-template: '- No user-facing changes'
 
 categories:
+  - type: 'pre-exclude'
+    when:
+      label: 'skip-changelog'
   - title: 'Features'
-    labels:
-      - enhancement
-      - feature
+    when:
+      labels:
+        - enhancement
+        - feature
   - title: 'Fixes'
-    labels:
-      - bug
-      - fix
+    when:
+      labels:
+        - bug
+        - fix
   - title: 'Dependencies'
-    labels:
-      - dependencies
+    when:
+      label: 'dependencies'
   - title: 'Maintenance'
-    labels:
-      - chore
-      - maintenance
-
-exclude-labels:
-  - skip-changelog
-
-version-resolver:
-  major:
-    labels:
-      - 'release: major'
-  minor:
-    labels:
-      - 'release: minor'
-  patch:
-    labels:
-      - 'release: patch'
-  default: patch
+    when:
+      labels:
+        - chore
+        - maintenance
+  - type: 'version-resolver'
+    semver-increment: 'major'
+    when:
+      label: 'release: major'
+  - type: 'version-resolver'
+    semver-increment: 'minor'
+    when:
+      label: 'release: minor'
+  - type: 'version-resolver'
+    semver-increment: 'patch'
+    when:
+      label: 'release: patch'
 
 template: |
   ## What's Changed
