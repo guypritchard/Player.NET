@@ -176,13 +176,14 @@ jobs:
           compression-level: 0
           retention-days: 14
 
-  release:
-    name: Publish GitHub release
-    if: github.ref_type == 'tag'
+  draft-release:
+    name: Update draft release
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: read
 
     steps:
       - name: Download packaged player
@@ -191,16 +192,25 @@ jobs:
           name: ${{ needs.build.outputs.package_name }}
           path: release
 
-      - name: Create GitHub release
+      - name: Update release draft
+        id: release-drafter
+        uses: release-drafter/release-drafter@4d75298e00d9e34c483e5ff8c68d0ea1c1940c1e # v7.5.1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Replace draft executable
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          PACKAGE_NAME: ${{ needs.build.outputs.package_name }}
+          RELEASE_ID: ${{ steps.release-drafter.outputs.id }}
+          RELEASE_TAG: ${{ steps.release-drafter.outputs.tag_name }}
           ASSET_NAME: ${{ needs.build.outputs.package_name }}.exe
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            "release/$ASSET_NAME#$ASSET_NAME" \
-            --verify-tag \
-            --generate-notes \
-            --title "$GITHUB_REF_NAME"
+          gh api "repos/$GH_REPO/releases/$RELEASE_ID/assets" --jq '.[].id' | while read -r asset_id; do
+            if [[ -n "$asset_id" ]]; then
+              gh api --method DELETE "repos/$GH_REPO/releases/assets/$asset_id"
+            fi
+          done
+
+          gh release upload "$RELEASE_TAG" "release/$ASSET_NAME#$ASSET_NAME"
