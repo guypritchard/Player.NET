@@ -180,10 +180,13 @@ jobs:
     name: Update draft release
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: build
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: read
+    outputs:
+      release_id: ${{ steps.release-drafter.outputs.id }}
+      release_tag: ${{ steps.release-drafter.outputs.tag_name }}
 
     steps:
       - name: Update release draft
@@ -192,6 +195,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
+  draft-package:
+    name: Update draft executable
+    needs: draft-release
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
       - name: Checkout release source
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -206,7 +217,7 @@ jobs:
         id: release-package
         shell: pwsh
         env:
-          RELEASE_TAG: ${{ steps.release-drafter.outputs.tag_name }}
+          RELEASE_TAG: ${{ needs.draft-release.outputs.release_tag }}
         run: |
           $version = $env:RELEASE_TAG -replace '^v', ''
           if ($version -notmatch '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$') {
@@ -248,8 +259,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          RELEASE_ID: ${{ steps.release-drafter.outputs.id }}
-          RELEASE_TAG: ${{ steps.release-drafter.outputs.tag_name }}
+          RELEASE_ID: ${{ needs.draft-release.outputs.release_id }}
+          RELEASE_TAG: ${{ needs.draft-release.outputs.release_tag }}
           ASSET_NAME: ${{ steps.release-package.outputs.asset_name }}
           ASSET_PATH: ${{ steps.release-package.outputs.asset_path }}
         run: |
