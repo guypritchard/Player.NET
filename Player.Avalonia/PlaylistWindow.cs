@@ -151,7 +151,7 @@ internal sealed class PlaylistView : Control
 
         if (unknownArtwork == null)
         {
-            using var stream = AssetLoader.Open(new Uri("avares://DJPad.Experimental/Assets/unknown.jpg"));
+            using var stream = AssetLoader.Open(new Uri("avares://Player.NET/Assets/unknown.jpg"));
             unknownArtwork = new Bitmap(stream);
         }
         return unknownArtwork;

@@ -208,7 +208,7 @@ public sealed class MiniPlayerView : Control
     {
         if (!assets.TryGetValue(name, out var image))
         {
-            using var stream = AssetLoader.Open(new Uri($"avares://DJPad.Experimental/Assets/{Uri.EscapeDataString(name)}"));
+            using var stream = AssetLoader.Open(new Uri($"avares://Player.NET/Assets/{Uri.EscapeDataString(name)}"));
             image = new Bitmap(stream);
             assets[name] = image;
         }
