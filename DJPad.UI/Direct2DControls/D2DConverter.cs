@@ -8,15 +8,15 @@ namespace DJPad.UI.Direct2DControls
 {
     using System.Drawing;
     using System.Drawing.Imaging;
-    using SharpDX;
-    using SharpDX.Direct2D1;
-    using SharpDX.DXGI;
+    using Vortice.Direct2D1;
+    using Vortice.DXGI;
+    using Vortice.Mathematics;
 
     public static class D2DConverter
     {
-        public static SharpDX.Direct2D1.Bitmap ToD2DBitmap(this System.Drawing.Bitmap drawingBitmap, WindowRenderTarget renderTarget)
+        public static ID2D1Bitmap ToD2DBitmap(this System.Drawing.Bitmap drawingBitmap, ID2D1HwndRenderTarget renderTarget)
         {
-            SharpDX.Direct2D1.Bitmap result = null;
+            ID2D1Bitmap result = null;
 
             //Lock the gdi resource
             BitmapData drawingBitmapData = drawingBitmap.LockBits(
@@ -24,23 +24,16 @@ namespace DJPad.UI.Direct2DControls
                 ImageLockMode.ReadOnly,
                 System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
 
-            //Prepare loading the image from gdi resource
-            DataStream dataStream = new DataStream(
-                drawingBitmapData.Scan0,
-                drawingBitmapData.Stride * drawingBitmapData.Height,
-                true,
-                false);
-
-            SharpDX.Direct2D1.BitmapProperties properties = new SharpDX.Direct2D1.BitmapProperties();
-            properties.PixelFormat = new SharpDX.Direct2D1.PixelFormat(
+            BitmapProperties properties = new BitmapProperties();
+            properties.PixelFormat = new Vortice.DCommon.PixelFormat(
                 Format.B8G8R8A8_UNorm,
-                SharpDX.Direct2D1.AlphaMode.Premultiplied);
+                Vortice.DCommon.AlphaMode.Premultiplied);
 
             //Load the image from the gdi resource
-            result = new SharpDX.Direct2D1.Bitmap(
-                renderTarget,
-                new Size2(drawingBitmap.Width, drawingBitmap.Height),
-                dataStream, drawingBitmapData.Stride,
+            result = renderTarget.CreateBitmap(
+                new SizeI(drawingBitmap.Width, drawingBitmap.Height),
+                drawingBitmapData.Scan0,
+                (uint)drawingBitmapData.Stride,
                 properties);
 
             //Unlock the gdi resource

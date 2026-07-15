@@ -19,4 +19,9 @@
 
         #endregion
     }
+
+    public interface IEmbeddedArtworkMetadata
+    {
+        Bitmap EmbeddedAlbumArt { get; }
+    }
 }

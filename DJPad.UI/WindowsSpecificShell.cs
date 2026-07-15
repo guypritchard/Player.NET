@@ -9,42 +9,51 @@
     using Resources;
     using System.Runtime.InteropServices;
 
-    public interface IShellIntegration
+    public class WindowsSpecificShell
     {
+        private static readonly System.Reflection.MethodInfo SetOverlayIconForHandle = typeof(TaskbarManager).GetMethod(
+            "SetOverlayIcon", new[] { typeof(IntPtr), typeof(Icon), typeof(string) });
+        private static readonly System.Reflection.MethodInfo SetProgressStateForHandle = typeof(TaskbarManager).GetMethod(
+            "SetProgressState", new[] { typeof(TaskbarProgressBarState), typeof(IntPtr) });
+        private static readonly System.Reflection.MethodInfo SetProgressValueForHandle = typeof(TaskbarManager).GetMethod(
+            "SetProgressValue", new[] { typeof(int), typeof(int), typeof(IntPtr) });
 
-    }
-
-    public class WindowsSpecificShell : IShellIntegration
-    {
         public void SetOverlayIcon(IntPtr windowHandle, IPlaylistItem item, bool playing)
         {
             if (item != null && TaskbarManager.IsPlatformSupported && windowHandle != IntPtr.Zero)
             {
-                var coverArt = item.SynchronousArt ?? Resources.Unknown;
-                coverArt = coverArt.Overlay(playing ? Resources.Player_Play_Small : Resources.Player_Pause_Small, new Rectangle(new Point(), coverArt.Size));
-                TaskbarManager.Instance.SetOverlayIcon(coverArt.ToIcon(), item.Metadata.Title);
+                using var coverArt = (item.SynchronousArt ?? Resources.Unknown).Overlay(
+                    playing ? Resources.Player_Play_Small : Resources.Player_Pause_Small,
+                    new Rectangle(new Point(), (item.SynchronousArt ?? Resources.Unknown).Size));
+                var iconHandle = coverArt.GetHicon();
+                try
+                {
+                    using var borrowedIcon = Icon.FromHandle(iconHandle);
+                    using var icon = (Icon)borrowedIcon.Clone();
+                    SetOverlayIconForHandle.Invoke(TaskbarManager.Instance, new object[] { windowHandle, icon, item.Metadata.Title });
+                }
+                finally
+                {
+                    DestroyIcon(iconHandle);
+                }
             }
         }
 
-        [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
-        public static extern IntPtr CreateRoundRectRgn
-          (
-              int nLeftRect, // x-coordinate of upper-left corner
-              int nTopRect, // y-coordinate of upper-left corner
-              int nRightRect, // x-coordinate of lower-right corner
-              int nBottomRect, // y-coordinate of lower-right corner
-              int nWidthEllipse, // height of ellipse
-              int nHeightEllipse // width of ellipse
-           );
+        public void SetPlaybackProgress(IntPtr windowHandle, int value, bool playing)
+        {
+            if (!TaskbarManager.IsPlatformSupported || windowHandle == IntPtr.Zero)
+            {
+                return;
+            }
 
-        //public void SetShellButtons(IntPtr windowHandle, IEnumerable<LightButton> buttons)
-        //{
-        //    if (TaskbarManager.IsPlatformSupported && windowHandle != IntPtr.Zero)
-        //    {
-        //        var shellbuttons = buttons.Select(b => new ThumbnailToolBarButton(b.Image().ToIcon(), b.Name));
+            var state = playing ? TaskbarProgressBarState.Normal : TaskbarProgressBarState.Paused;
+            SetProgressStateForHandle.Invoke(TaskbarManager.Instance, new object[] { state, windowHandle });
+            SetProgressValueForHandle.Invoke(TaskbarManager.Instance, new object[] { Math.Clamp(value, 0, 1000), 1000, windowHandle });
+        }
 
-        //        TaskbarManager.Instance.ThumbnailToolBars.AddButtons(windowHandle, shellbuttons.ToArray());
-        //    }
-        //}
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool DestroyIcon(IntPtr handle);
+
     }
 }

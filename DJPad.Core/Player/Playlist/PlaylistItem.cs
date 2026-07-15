@@ -136,7 +136,6 @@ namespace DJPad.Player
                     this.State = PlaylistItemState.Loading;
                     var fileSource = SourceRegistry.ResolveSource(this.FullFileName, true);
                     fileSource.Load(this.FullFileName);
-                    fileSource.GetMetadata();
                     this.State = PlaylistItemState.Loaded;
                     source = fileSource;
                 }

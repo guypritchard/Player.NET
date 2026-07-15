@@ -9,16 +9,17 @@ namespace DJPad.Core.Utils
     using System.Drawing;
     using System.IO;
     using DJPad.Types;
-    using SharpDX;
-    using SharpDX.DXGI;
     using System.Drawing.Imaging;
     using ColorPalette = DJPad.Types.ColorPalette;
+    using Vortice.Direct2D1;
+    using Vortice.DXGI;
+    using SizeI = Vortice.Mathematics.SizeI;
 
     public static class BitmapExtensions
     {
-        public static SharpDX.Direct2D1.Bitmap ToD2dBitmap(this Bitmap drawingBitmap, SharpDX.Direct2D1.WindowRenderTarget renderTarget2d)
+        public static ID2D1Bitmap ToD2dBitmap(this Bitmap drawingBitmap, ID2D1HwndRenderTarget renderTarget2d)
         {
-            SharpDX.Direct2D1.Bitmap result = null;
+            ID2D1Bitmap result = null;
 
             //Lock the gdi resource
             BitmapData drawingBitmapData = drawingBitmap.LockBits(
@@ -27,22 +28,16 @@ namespace DJPad.Core.Utils
                 System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
 
             //Prepare loading the image from gdi resource
-            DataStream dataStream = new DataStream(
-                drawingBitmapData.Scan0,
-                drawingBitmapData.Stride * drawingBitmapData.Height,
-                true,
-                false);
-
-            SharpDX.Direct2D1.BitmapProperties properties = new SharpDX.Direct2D1.BitmapProperties();
-            properties.PixelFormat = new SharpDX.Direct2D1.PixelFormat(
+            BitmapProperties properties = new BitmapProperties();
+            properties.PixelFormat = new Vortice.DCommon.PixelFormat(
                 Format.B8G8R8A8_UNorm,
-                SharpDX.Direct2D1.AlphaMode.Premultiplied);
+                Vortice.DCommon.AlphaMode.Premultiplied);
 
             //Load the image from the gdi resource
-            result = new SharpDX.Direct2D1.Bitmap(
-                renderTarget2d,
-                new Size2(drawingBitmap.Width, drawingBitmap.Height),
-                dataStream, drawingBitmapData.Stride,
+            result = renderTarget2d.CreateBitmap(
+                new SizeI(drawingBitmap.Width, drawingBitmap.Height),
+                drawingBitmapData.Scan0,
+                (uint)drawingBitmapData.Stride,
                 properties);
 
             //Unlock the gdi resource
@@ -77,7 +72,7 @@ namespace DJPad.Core.Utils
             using (var graphics = Graphics.FromImage(resizedImage))
             {
                 graphics.SmoothingMode = SmoothingMode.HighQuality;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
                 graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
                 graphics.DrawImage(bitmap, 0, 0, size.Height, size.Width);

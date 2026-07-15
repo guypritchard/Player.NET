@@ -6,10 +6,11 @@
     using System.Drawing.Imaging;
     using System.Linq;
     using DJPad.Core.Utils;
+    using Vortice.Direct2D1;
 
     public class LightMenu : LightButton, IDisposable
     {
-        private SharpDX.Direct2D1.Bitmap cachedImage;
+        private ID2D1Bitmap cachedImage;
 
         public enum MenuOrientation
         {

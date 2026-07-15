@@ -5,7 +5,7 @@
     using System.Drawing;
     using System.Windows.Forms;
     using System.Windows.Forms.VisualStyles;
-    using SharpDX.Direct2D1;
+    using Vortice.Direct2D1;
 
     public class WindowState
     {
@@ -59,6 +59,6 @@
 
     public class D2DWindowState : WindowState
     {
-        public WindowRenderTarget Target { get; set; }
+        public ID2D1HwndRenderTarget Target { get; set; }
     }
 }

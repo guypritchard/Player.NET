@@ -9,11 +9,6 @@
 
     public class BassZoom : FftBasedVisualisation
     {
-        public BassZoom()
-            : base(0, false)
-        {
-        }
-
         // https://en.wikipedia.org/wiki/Superformula
         // http://stackoverflow.com/questions/20408388/how-to-filter-fft-data-for-audio-visualisation
         protected override void DrawChannel(Graphics g, int width, int height, Sample.Channel channel, int zoom = 1, ColorPalette palette = null)

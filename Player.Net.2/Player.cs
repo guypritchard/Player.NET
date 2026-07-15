@@ -21,7 +21,6 @@
         private readonly MultimediaKeyListener listener;
         private readonly WindowState windowState;
         readonly IUserInterface<Bitmap>[] userInterfaces;
-        private Scanner scanner;
  
         public Player() : base(false)
         {

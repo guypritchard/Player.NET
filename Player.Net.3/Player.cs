@@ -1,6 +1,6 @@
-﻿using SharpDX.Direct2D1;
-using SharpDX.DXGI;
-using SharpDX.Mathematics.Interop;
+﻿using Vortice.Direct2D1;
+using Vortice.DXGI;
+using Vortice.Mathematics;
 
 
 namespace Player.Net._3
@@ -13,20 +13,16 @@ namespace Player.Net._3
     using DJPad.Player;
     using DJPad.UI;
     using global::Player.Net._2.UserInterface;
-    using SharpDX;
-   //sing SharpDX.DirectWrite;
-    using SharpDX.Windows;
-    using SharpDX.Direct2D1;
 
     using System.Windows.Forms;
-    using Bitmap = SharpDX.Direct2D1.Bitmap;
-    using PixelFormat = SharpDX.Direct2D1.PixelFormat;
+    using Bitmap = Vortice.Direct2D1.ID2D1Bitmap;
+    using PixelFormat = Vortice.DCommon.PixelFormat;
     using DJPad.UI.Interfaces;
     using System;
     using System.Diagnostics;
     using DJPad.UI.D2D;
 
-    public partial class Player : RenderForm
+    public partial class Player : Form
     {
         private const int WM_KEYDOWN = 0x0100;
         private const int WM_LBUTTONDOWN = 0x201;
@@ -43,7 +39,7 @@ namespace Player.Net._3
         private const int WM_TIMER = 0x0113;
         private const int CSDROPSHADOW = 0x00020000;
 
-        private List<LightControl<SharpDX.Direct2D1.Bitmap>> LightControlCollection = new List<LightControl<SharpDX.Direct2D1.Bitmap>>();
+        private List<LightControl<ID2D1Bitmap>> LightControlCollection = new List<LightControl<ID2D1Bitmap>>();
         private readonly D2DWindowState windowState;
 
         private readonly PlayerState playerState;
@@ -51,11 +47,10 @@ namespace Player.Net._3
         private readonly System.Timers.Timer displayControlTimer;
         private DateTime previousMove;
 
-        IUserInterface<SharpDX.Direct2D1.Bitmap> userInterface = new NormalUi();
+        IUserInterface<ID2D1Bitmap> userInterface = new NormalUi();
 
-        WindowRenderTarget renderTarget2d;
-        SharpDX.Direct2D1.Factory factory2d = new SharpDX.Direct2D1.Factory(FactoryType.SingleThreaded, DebugLevel.Information);
-        SharpDX.DirectWrite.Factory factoryText = new SharpDX.DirectWrite.Factory();
+        ID2D1HwndRenderTarget renderTarget2d;
+        ID2D1Factory factory2d = D2D1.D2D1CreateFactory<ID2D1Factory>(FactoryType.SingleThreaded, DebugLevel.Information);
 
         public Player()
         {
@@ -170,7 +165,7 @@ namespace Player.Net._3
                 // return false;
             };
 
-            this.Closing += (sender, args) =>
+            this.FormClosing += (sender, args) =>
             {
                 this.displayControlTimer.Enabled = false;
             };
@@ -188,16 +183,14 @@ namespace Player.Net._3
             var targetProp = new HwndRenderTargetProperties
             {
                 Hwnd = this.Handle,
-                PixelSize = new SharpDX.Size2(this.Size.Width, this.Size.Height),
+                PixelSize = new SizeI(this.Size.Width, this.Size.Height),
                 PresentOptions = PresentOptions.None
             };
 
-            var renderProp = new RenderTargetProperties(new PixelFormat(Format.B8G8R8A8_UNorm, SharpDX.Direct2D1.AlphaMode.Premultiplied));
+            var renderProp = new RenderTargetProperties(new PixelFormat(Format.B8G8R8A8_UNorm, Vortice.DCommon.AlphaMode.Premultiplied));
 
-            this.renderTarget2d = new WindowRenderTarget(
-                this.factory2d,
-                renderProp,
-                targetProp) { AntialiasMode = AntialiasMode.PerPrimitive };
+            this.renderTarget2d = this.factory2d.CreateHwndRenderTarget(renderProp, targetProp);
+            this.renderTarget2d.AntialiasMode = AntialiasMode.PerPrimitive;
 
             this.windowState.Target = this.renderTarget2d;
             this.windowState.Close = this.Close;
@@ -207,43 +200,49 @@ namespace Player.Net._3
             this.LightControlCollection.AddRange(layout);
             this.LightControlCollection.ForEach(c => c.Display = true);
 
-            RenderLoop.Run(
-                this,
-                    () =>
+            this.Invalidate();
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            if (this.renderTarget2d == null)
+            {
+                base.OnPaint(e);
+                return;
+            }
+
+            this.renderTarget2d.BeginDraw();
+
+            foreach (var control in this.LightControlCollection)
+            {
+                if (control.Display && control.Image != null)
+                {
+                    var image = control.Image();
+                    if (image != null)
                     {
-                        this.renderTarget2d.BeginDraw();
+                        this.renderTarget2d.DrawBitmap(
+                            image,
+                            1.0f,
+                            BitmapInterpolationMode.Linear,
+                            new Rect(
+                                control.Extents.Left,
+                                control.Extents.Top,
+                                control.Extents.Right,
+                                control.Extents.Bottom));
+                    }
+                }
+            }
 
-                        // D2D debug layer?
-                        foreach (var control in this.LightControlCollection)
-                        {
-                            if (control.Display && control.Image != null)
-                            {
-                                var image = control.Image();
-                                if (image != null)
-                                {
-                                    this.renderTarget2d.DrawBitmap(
-                                        image,
-                                        new RawRectangleF(
-                                            control.Extents.Left,
-                                            control.Extents.Top,
-                                            control.Extents.Right,
-                                            control.Extents.Bottom),
-                                        1.0f,
-                                        BitmapInterpolationMode.Linear);
-                                }
-                            }
-                        }
+            try
+            {
+                this.renderTarget2d.EndDraw();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
 
-                        try
-                        {
-                            this.renderTarget2d.EndDraw();
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.WriteLine(e);
-                        }                        
-                    }, 
-                    true);
+            base.OnPaint(e);
         }
 
         protected override void WndProc(ref Message m)

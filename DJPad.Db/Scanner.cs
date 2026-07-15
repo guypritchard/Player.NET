@@ -11,22 +11,12 @@
     public class Scanner
     {
         /// <summary>
-        /// The scan folder progress event.
-        /// </summary>
-        public event Action<int, int> ScanProgressEvent;
-
-        /// <summary>
         /// The scan item event.
         /// </summary>
         public event Action<string> ScanItemEvent;
 
         // The event has 
         public event Action<string> ScanStartEvent;
-
-        /// <summary>
-        /// The scan folder event.
-        /// </summary>
-        public event Action<string, int> ScanFolderEvent;
 
         /// <summary>
         /// The extensions of media files.

@@ -11,10 +11,6 @@
 
     public class FFTGraph : IVisualisation
     {
-        private const int DEFAULT_SPECTRUM_ANALYSER_BAND_COUNT = 60;
-        private const float DEFAULT_SPECTRUM_ANALYSER_DECAY = 0.05F;
-        private const int DEFAULT_SPECTRUM_ANALYSER_PEAK_DELAY = 20;
-
         private readonly IFFT fft;
 
         private Sample copiedSample;
@@ -46,8 +42,6 @@
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
             g.TextRenderingHint = TextRenderingHint.AntiAlias;
 
-            //g.FillRectangle(new SolidBrush(background), new Rectangle(0, 0, width, height));
-
             var currentSample = this.SampleSource.GetSample(this.SampleSource.GetFormat().SamplesPerSecond/16);
             if (currentSample != null)
             {
@@ -57,7 +51,6 @@
             if (this.copiedSample != null)
             {
                 DrawChannel(g, width, height, Sample.Channel.Both);
-                // DrawChannel(g, height, Sample.Channel.Right);
             }
         }
 

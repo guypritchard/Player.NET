@@ -17,7 +17,7 @@
         public TimeSpan Duration { get; set; }
     }
 
-    public class SimpleMetadataSource : IMetadata
+    public class SimpleMetadataSource : IMetadata, IEmbeddedArtworkMetadata
     {
         public SimpleMetadataSource()
         {
@@ -34,6 +34,7 @@
             this.Title = data.Title;
             this.Duration = data.Duration;
             this.AlbumArt = data.AlbumArt;
+            this.EmbeddedAlbumArt = (data as IEmbeddedArtworkMetadata)?.EmbeddedAlbumArt;
         }
 
         public string Album { get; set; }
@@ -43,6 +44,8 @@
         public string Title { get; set; }
 
         public Bitmap AlbumArt { get; set; }
+
+        public Bitmap EmbeddedAlbumArt { get; set; }
 
         public TimeSpan Duration { get; set; }
     }

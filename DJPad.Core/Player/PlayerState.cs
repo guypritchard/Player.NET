@@ -112,11 +112,12 @@ namespace DJPad.Player
             if (!Playlist.End)
             {
                 var finished = Playlist.Current;
+                var continuePlaying = this.KeepPlaying;
 
                 Playlist.MoveNext();
-                this.Play(Playlist.Current, this.KeepPlaying);
+                var transitioning = this.Play(Playlist.Current, continuePlaying, () => finished.Dispose());
 
-                if (finished != null)
+                if (finished != null && !transitioning)
                 {
                     finished.Dispose();
                 }
@@ -128,11 +129,12 @@ namespace DJPad.Player
             if (!Playlist.Start)
             {
                 var finished = Playlist.Current;
+                var continuePlaying = this.KeepPlaying;
 
                 Playlist.MovePrevious();
-                this.Play(Playlist.Current, this.KeepPlaying);
+                var transitioning = this.Play(Playlist.Current, continuePlaying, () => finished.Dispose());
 
-                if (finished != null)
+                if (finished != null && !transitioning)
                 {
                     finished.Dispose();
                 }
@@ -141,9 +143,30 @@ namespace DJPad.Player
 
         public void Play(IPlaylistItem item, bool autoPlay = false)
         {
+            this.Play(item, autoPlay, null);
+        }
+
+        private bool Play(IPlaylistItem item, bool autoPlay, Action transitionComplete)
+        {
             if (item == null)
             {
-                return;
+                return false;
+            }
+
+            if (autoPlay && this.Audio is DirectSoundOut directSound && this.IsPlaying)
+            {
+                var source = item.Source;
+                this.FireLoadStateChanged(item);
+                if (item.State == PlaylistItemState.Loaded
+                    && directSound.TryTransitionTo(source, transitionComplete))
+                {
+                    this.playRequested = true;
+                    this.Configuration.PlaylistName = Playlist.FileName;
+                    this.Configuration.LastFile = item.FullFileName;
+                    this.Configuration.Save();
+                    this.FirePlayStateChanged(item, this.Audio.State);
+                    return true;
+                }
             }
 
             if (this.Audio != null)
@@ -178,6 +201,7 @@ namespace DJPad.Player
             }
 
             this.FirePlayStateChanged(item, this.Audio.State);
+            return false;
         }
 
         public bool CanPlay

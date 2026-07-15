@@ -11,9 +11,9 @@
     using DJPad.Core.Interfaces;
     using DJPad.Core.Utils;
     using DJPad.Types;
-    using SharpDX.Direct2D1;
-    using SharpDX.Mathematics.Interop;
     using System.Drawing;
+    using System.Numerics;
+    using Vortice.Direct2D1;
 
     public class CircularOscilloscope
     {
@@ -52,7 +52,7 @@
             return this.SampleSource.GetFormat();
         }
 
-        public void Draw(WindowRenderTarget target, Color backgroundColor, int width, int height, bool playing = true, TimeSpan? duration = null, ColorPalette palette = null)
+        public void Draw(ID2D1HwndRenderTarget target, Color backgroundColor, int width, int height, bool playing = true, TimeSpan? duration = null, ColorPalette palette = null)
         {
             if (palette == null)
             {
@@ -66,7 +66,10 @@
                 this.Total = duration.Value;
             }
 
-            target.FillRectangle(new RawRectangleF(0, 0, width, height), new SolidColorBrush(target, backgroundColor.ToRawColor4()));
+            using (var backgroundBrush = target.CreateSolidColorBrush(backgroundColor.ToColor4()))
+            {
+                target.FillRectangle(new RectangleF(0, 0, width, height), backgroundBrush);
+            }
 
             if (this.SampleSource == null)
             {
@@ -136,9 +139,9 @@
 
             try
             {
-                var circleB = new List<RawVector2>();
-                var circleL = new List<RawVector2>();
-                var circleR = new List<RawVector2>();
+                var circleB = new List<Vector2>();
+                var circleL = new List<Vector2>();
+                var circleR = new List<Vector2>();
 
                 int j = 0;
                 const float scale = 0.7f;
@@ -149,24 +152,24 @@
                 {
                     if (leftgraph.Length <= 2 && rightgraph.Length <= 2)
                     {
-                        circleL.Add(new RawVector2(diameter + (float)SinCache[i], diameter + (float)CosCache[i]));
-                        circleR.Add(new RawVector2(diameter + (float)SinCache[i], diameter + (float)CosCache[i]));
-                        circleB.Add(new RawVector2(diameter + (float)SinCache[i], diameter + (float)CosCache[i]));
+                        circleL.Add(new Vector2(diameter + (float)SinCache[i], diameter + (float)CosCache[i]));
+                        circleR.Add(new Vector2(diameter + (float)SinCache[i], diameter + (float)CosCache[i]));
+                        circleB.Add(new Vector2(diameter + (float)SinCache[i], diameter + (float)CosCache[i]));
                     }
                     else
                     {
                         // This looks weird, this is to ensure the circles appear within the window. 
-                        circleL.Add(new RawVector2(diameter + (float)SinCache[i] * leftgraph[j].Y * scale,
+                        circleL.Add(new Vector2(diameter + (float)SinCache[i] * leftgraph[j].Y * scale,
                                                    diameter + (float)CosCache[i] * leftgraph[j].Y * scale));
-                        circleR.Add(new RawVector2(diameter + (float)SinCache[i] * rightgraph[j].Y * scale,
+                        circleR.Add(new Vector2(diameter + (float)SinCache[i] * rightgraph[j].Y * scale,
                                                    diameter + (float)CosCache[i] * rightgraph[j].Y * scale));
-                        circleB.Add(new RawVector2(diameter + (float)SinCache[i] * bothgraph[j].Y * scale,
+                        circleB.Add(new Vector2(diameter + (float)SinCache[i] * bothgraph[j].Y * scale,
                                                    diameter + (float)CosCache[i] * bothgraph[j].Y * scale));
                         j++;
                     }
                 }
 
-                using (var geometry = new PathGeometry(target.Factory))
+                using (var geometry = target.Factory.CreatePathGeometry())
                 {
                     var sink = geometry.Open();
                     sink.BeginFigure(circleL.First(), FigureBegin.Filled);
@@ -175,10 +178,13 @@
                     sink.EndFigure(FigureEnd.Open);
                     sink.Close();
 
-                    target.DrawGeometry(geometry, new SolidColorBrush(target, palette.Saturated.ToRawColor4()));
+                    using (var brush = target.CreateSolidColorBrush(palette.Saturated.ToColor4()))
+                    {
+                        target.DrawGeometry(geometry, brush);
+                    }
                 }
 
-                using (var geometry2 = new PathGeometry(target.Factory))
+                using (var geometry2 = target.Factory.CreatePathGeometry())
                 {
                     var sink2 = geometry2.Open();
                     sink2.BeginFigure(circleB.Take(completeGraphLength >= 2 ? completeGraphLength : 2).First(), FigureBegin.Filled);
@@ -187,12 +193,15 @@
                     sink2.Close();
 
                     // Countdown
-                    target.DrawGeometry(geometry2, new SolidColorBrush(target, palette.Brightest.ToRawColor4()), 8.0f);
+                    using (var brush = target.CreateSolidColorBrush(palette.Brightest.ToColor4()))
+                    {
+                        target.DrawGeometry(geometry2, brush, 8.0f);
+                    }
                 }
 
                 if (circleB.Skip(completeGraphLength >= 2 ? completeGraphLength : 0).Count() > 2)
                 {
-                    using (var geometry3 = new PathGeometry(target.Factory))
+                    using (var geometry3 = target.Factory.CreatePathGeometry())
                     {
                         var sink3 = geometry3.Open();
                         sink3.BeginFigure(circleB.Skip(completeGraphLength >= 2 ? completeGraphLength : 0).First(), FigureBegin.Filled);
@@ -200,7 +209,10 @@
                         sink3.EndFigure(FigureEnd.Open);
                         sink3.Close();
 
-                        target.DrawGeometry(geometry3, new SolidColorBrush(target, palette.Darkest.ToRawColor4()), 8.0f);
+                        using (var brush = target.CreateSolidColorBrush(palette.Darkest.ToColor4()))
+                        {
+                            target.DrawGeometry(geometry3, brush, 8.0f);
+                        }
                     }
                 }
             }
@@ -231,12 +243,12 @@
             return ((sample * height * 0.4f) / short.MaxValue) + (height / 2);
         }
 
-        private List<RawPoint> Circle(int size)
+        private List<Point> Circle(int size)
         {
-            var circle = new List<RawPoint>();
+            var circle = new List<Point>();
             for (double i = 0; i < 2 * Math.PI; i += 0.021)
             {
-                circle.Add(new RawPoint((int)(size + Math.Sin(i) * size), (int)(size + Math.Cos(i) * size)));
+                circle.Add(new Point((int)(size + Math.Sin(i) * size), (int)(size + Math.Cos(i) * size)));
             }
 
             circle.Add(circle.First());
