@@ -21,7 +21,7 @@ Player.NET is a compact, artwork-first Windows music player. The current player 
 - Windows 10 or Windows 11 for local development.
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
-Published `win-x64` release archives are self-contained and do not require a separately installed .NET runtime.
+Published `win-x64` executables are self-contained and do not require a separately installed .NET runtime.
 
 ## Run
 
@@ -55,10 +55,10 @@ dotnet test DJPad.Tests/DJPad.Tests.csproj --configuration Release --filter "Tes
 
 ## Releases
 
-GitVersion calculates semantic versions from the full Git history. Every CI run publishes a versioned, self-contained `win-x64` workflow artifact. Pushing a stable tag such as `v0.1.0` also creates a GitHub release containing:
+GitVersion calculates semantic versions from the full Git history. Every CI run publishes a versioned, self-contained single-file `win-x64` executable. Pushing a stable tag such as `v0.1.0` also creates a GitHub release containing:
 
 ```text
-Player.NET-0.1.0-win-x64.zip
+Player.NET-0.1.0-win-x64.exe
 ```
 
 Release tags must use `vMAJOR.MINOR.PATCH` and point to a commit contained in `master`.

@@ -28,7 +28,7 @@ public sealed class MainWindow : Window
     public MainWindow()
     {
         Title = "Player.NET";
-        using (var iconStream = AssetLoader.Open(new Uri("avares://DJPad.Experimental/Assets/Player.ico")))
+        using (var iconStream = AssetLoader.Open(new Uri("avares://Player.NET/Assets/Player.ico")))
         {
             Icon = new WindowIcon(iconStream);
         }
