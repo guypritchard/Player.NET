@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DJPad.Core\DJPad.Core.csproj" />
-    <ProjectReference Include="..\DJPad.UI\DJPad.UI.csproj" />
     <ProjectReference Include="..\Resources\DJPad.Resources.csproj" />
     <AvaloniaResource Include="..\Resources\Resources\*.png" Link="Assets\%(Filename)%(Extension)" />
     <AvaloniaResource Include="..\Resources\Resources\*.jpg" Link="Assets\%(Filename)%(Extension)" />

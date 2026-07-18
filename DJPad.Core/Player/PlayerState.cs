@@ -21,7 +21,7 @@ namespace DJPad.Player
 
         private bool playRequested = false;
         
-        public PlayerState(IMediaCorpus corpus = null)
+        public PlayerState()
         {
             this.Configuration = ApplicationConfiguration.Load<PlayerConfiguration>(PlayerConfiguration.DefaultLocation);
             if (this.Configuration.Volume == 0)
