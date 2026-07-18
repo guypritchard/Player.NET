@@ -4,12 +4,4 @@
     <Deterministic>false</Deterministic>
     <NoWarn>$(NoWarn);CS0162;CS0168;CS0169;CS0219;CS0414;CS0649;CS0675;CS1717;CS8981</NoWarn>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="converter\Converter.cs" />
-    <Compile Remove="converter\jlc.cs" />
-    <Compile Remove="decoder\BitstreamOLD.cs" />
-    <Compile Remove="Mp3StreamOLD.cs" />
-    <Compile Remove="player\**\*.cs" />
-  </ItemGroup>
 </Project>
