@@ -4,6 +4,10 @@
 
 Player.NET is a compact, artwork-first Windows music player. The current player uses a code-first Avalonia UI on .NET 10 while preserving the original 400x400 chromeless design and playback engine.
 
+<p align="center">
+  <img src="docs/images/player-main.png" alt="Player.NET main mode playing What's Going On by Marvin Gaye" width="500">
+</p>
+
 ## Features
 
 - Local MP3, WAV, and WMA playback.
@@ -15,6 +19,20 @@ Player.NET is a compact, artwork-first Windows music player. The current player 
 - Album-reactive visualizations including oscilloscopes, FFT bars, waterfall spectrogram, circular frequency scope, Pixel Mosaic, and Liquid Artwork.
 - Windows 11 taskbar album-art overlay, play/pause state, and playback progress.
 - Random, repeat, seeking, media controls, and persisted player state.
+
+## Player Modes
+
+### Minimal
+
+<p align="center">
+  <img src="docs/images/player-minimal.png" alt="Player.NET minimal artwork mode" width="500">
+</p>
+
+### Mini
+
+<p align="center">
+  <img src="docs/images/player-mini.png" alt="Player.NET 400x50 mini mode" width="500">
+</p>
 
 ## Requirements
 
