@@ -1,7 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <RootNamespace>DJPad.Upnp</RootNamespace>
-    <AssemblyName>DJPad.Upnp</AssemblyName>
-    <NoWarn>$(NoWarn);CS8981</NoWarn>
-  </PropertyGroup>
-</Project>

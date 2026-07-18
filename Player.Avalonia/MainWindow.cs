@@ -5,7 +5,6 @@ using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using DJPad.Core;
-using DJPad.UI;
 
 namespace DJPad.Experimental;
 
