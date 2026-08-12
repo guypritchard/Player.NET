@@ -25,9 +25,8 @@ public sealed class PlaylistWindow : Window
         MaxHeight = 400;
         CanResize = false;
         ShowInTaskbar = false;
-        SystemDecorations = SystemDecorations.None;
+        WindowDecorations = WindowDecorations.None;
         ExtendClientAreaToDecorationsHint = true;
-        ExtendClientAreaChromeHints = Avalonia.Platform.ExtendClientAreaChromeHints.NoChrome;
         WindowStartupLocation = WindowStartupLocation.Manual;
         Background = Brushes.Black;
         Content = new PlaylistView(player);

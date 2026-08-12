@@ -32,9 +32,8 @@ public sealed class MainWindow : Window
             Icon = new WindowIcon(iconStream);
         }
         CanResize = false;
-        SystemDecorations = SystemDecorations.None;
+        WindowDecorations = WindowDecorations.None;
         ExtendClientAreaToDecorationsHint = true;
-        ExtendClientAreaChromeHints = Avalonia.Platform.ExtendClientAreaChromeHints.NoChrome;
         Background = Avalonia.Media.Brushes.Black;
 
         var savedMode = player.State.Configuration.Mode;
